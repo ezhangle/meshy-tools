@@ -1,18 +1,27 @@
-These files are release under a 2-clause BSD licence (see LICENCE for details), but I'd appreciate it if you could drop me an email on d.kaye@dunelm.org.uk and let me know if you find them useful. 
+OFFtools (v0.7)
+--------
+
+These programs are release under a 2-clause BSD licence (see LICENCE for details), but I'd appreciate it if you could drop me an email on d.kaye@dunelm.org.uk and let me know if you find them useful.
 
 
-To build, type "make off2noff" or "make noff2off" in this directory. These programs have been written and tested on OpenBSD/amd64, the compile with -Wall -pedantic and -ansi without any complaints so they should work fine on other platforms. Bug reports are welcome.
+To build, just type "make" in this directory. These programs have been written and (partially) tested on OpenBSD/amd64, the compile with -Wall -pedantic and -ansi without any complaints so they should work fine on other platforms. Bug reports are welcome.
 
-
+COFF and OFF files are both dealt with transparently, likewise CNOFF and NOFF files. Whilst coff2off and noff2off dump the extra information to an external file I haven't yet written a program to recombine them. At this point they will be at version 1.0.
 
 
 off2noff
 --------
-Converts (C)OFF files to (C)NOFF files by calculating the normal and barycentre (``centre of mass'') for each face. It then computes the normal of a vertex as a weighted sum of all adjacent face-normals. The weights are 1 / (1 + dist to barycentre ).
-
-
+Converts OFF files to NOFF files by calculating the normal and barycentre (``centre of mass'') for each face. It then computes the normal of a vertex as a weighted sum of all adjacent face-normals. The weights are 1 / (1 + dist to barycentre ).
 
 
 noff2off
 --------
-This simply reads a (C)NOFF file, writes the normal components to a file "normals", and outputs a plain (C)OFF file. The reading/writing of face data is performed blindly (i.e. as a stream of characters) and so CNOFF files may be converted to plain COFF files.
+removes normal information from a NOFF file and dumps it to an external file
+
+off2coff
+--------
+takes r,g and b values and applies this colour to all faces.
+
+coff2off
+--------
+removes colour from all faces in a COFF file and dumps it to an external file

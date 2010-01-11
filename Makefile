@@ -1,6 +1,12 @@
 CC=gcc
 CFLAGS=-pedantic -Wall -ansi
 
+all:
+	$(CC) $(CFLAGS) -lm -o off2noff	off2noff.c
+	$(CC) $(CFLAGS) -lm -o noff2off	noff2off.c
+	$(CC) $(CFLAGS) -lm -o off2coff	off2coff.c
+	$(CC) $(CFLAGS) -lm -o coff2off	coff2off.c
+
 off2noff: off2noff.c	off2noff.h
 	$(CC) $(CFLAGS) -lm -o off2noff	off2noff.c
 
