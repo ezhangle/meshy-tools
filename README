@@ -1,0 +1,18 @@
+These files are release under a 2-clause BSD licence (see LICENCE for details), but I'd appreciate it if you could drop me an email on d.kaye@dunelm.org.uk and let me know if you find them useful. 
+
+
+To build, type "make off2noff" or "make noff2off" in this directory. These programs have been written and tested on OpenBSD/amd64, the compile with -Wall -pedantic and -ansi without any complaints so they should work fine on other platforms. Bug reports are welcome.
+
+
+
+
+off2noff
+--------
+Converts (C)OFF files to (C)NOFF files by calculating the normal and barycentre (``centre of mass'') for each face. It then computes the normal of a vertex as a weighted sum of all adjacent face-normals. The weights are 1 / (1 + dist to barycentre ).
+
+
+
+
+noff2off
+--------
+This simply reads a (C)NOFF file, writes the normal components to a file "normals", and outputs a plain (C)OFF file. The reading/writing of face data is performed blindly (i.e. as a stream of characters) and so CNOFF files may be converted to plain COFF files.
