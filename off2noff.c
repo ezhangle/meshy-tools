@@ -9,23 +9,28 @@
 
 int main( int argc, char **argv )
 {
-	FILE * infile, *outfile;
+	FILE * infile, *outfile, *normfile;
 	vertex * vertices = NULL;
 	face * faces = NULL;
 	colour * colours = NULL;
 
 	char c;
 	int is_coloured = 0;
+	int stitch_normals = 0;
 	long int numverts, numfaces, numedges;
 
 	/* tell people about the syntax if they don't get it right */
-	if( !argc ){
-		printf("Syntax is: %s <input-file> <output-file>\n", argv[0]);
-		printf("Alternatively: %s <input-file> will simply convert <input-file>\n", argv[0]);
+	if( argc == 0 ){
+		printf("Syntax is: %s <input-file> <output-file> <normal_file>\n", argv[0]);
+		printf("<input-file> can be the same as <output-file>.\n");
+		printf("If <normal_file> is provided, its normal data will be used instead of calculating normals\n");
 		return 0;
 	}
 	
 	infile = fopen( argv[1], "r" );
+
+	if( argv[3] != NULL )
+		stitch_normals = 1;
 
 	c = fgetc(infile);
 	fgetc(infile);
@@ -71,18 +76,20 @@ int main( int argc, char **argv )
 
 	fclose(infile);
 
-	calc_face_normals( faces, vertices, numfaces );
-
-	find_face_associations( faces, vertices, numfaces, numverts );
-
-	calc_vertex_normals( vertices, faces,  numfaces, numverts );
+	if( stitch_normals == 0 ){
+		calc_face_normals( faces, vertices, numfaces );
+		find_face_associations( faces, vertices, numfaces, numverts );
+		calc_vertex_normals( vertices, faces,  numfaces, numverts );
+	}
+	else
+		normfile = fopen( argv[3], "r" );
 
 	if( argc == 1 )
 		outfile = fopen( argv[1], "w" );
 	else
 		outfile = fopen( argv[2], "w" );
 
-	write_noff_file( outfile, numverts, numfaces, numedges, vertices, faces, colours, is_coloured );
+	write_noff_file( outfile, normfile, numverts, numfaces, numedges, vertices, faces, colours, is_coloured, stitch_normals );
 
 	printf("done.\n");
 	return 0;
@@ -268,11 +275,12 @@ void calc_vertex_normals( vertex * vertices, face * faces, long int numfaces, lo
 }
 
 /** Actually write out the NOFF file */
-void write_noff_file( FILE * outfile, long int numverts, long int numfaces, long int numedges
-					, vertex * vertices, face * faces, colour * colours, int is_coloured )
+void write_noff_file( FILE * outfile, FILE * normfile, long int numverts, long int numfaces, long int numedges
+					, vertex * vertices, face * faces, colour * colours, int is_coloured, int stitch_normals )
 {
 	long int i = 0;
 	int side;
+	vector norm;
 
 	if( is_coloured )
 		fprintf( outfile, "CNOFF\n" );
@@ -283,7 +291,13 @@ void write_noff_file( FILE * outfile, long int numverts, long int numfaces, long
 
 	for( i = 0; i != numverts; ++i){
 		fprintf( outfile, "%f %f %f ", vertices[i].pos.x, vertices[i].pos.y, vertices[i].pos.z );
-		fprintf( outfile, "%f %f %f\n", vertices[i].norm.x, vertices[i].norm.y, vertices[i].norm.z );
+
+		if( stitch_normals == 0 )
+			fprintf( outfile, "%f %f %f\n", vertices[i].norm.x, vertices[i].norm.y, vertices[i].norm.z );
+		else{
+			fscanf(normfile, " %lf %lf %lf", &norm.x, &norm.y, &norm.z );
+			fprintf( outfile, " %f %f %f\n", norm.x, norm.y, norm.z );
+		}
 	}
 
 	for( i=0; i != numfaces; ++i)

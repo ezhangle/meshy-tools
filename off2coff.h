@@ -15,5 +15,6 @@ void read_vertex_data(FILE * infile, vector * vertices, vector * normals, long i
 
 void read_face_data( FILE * infile, face* faces, long int numfaces );
 
-void write_coff_file( FILE * outfile, vector * vertices, vector * normals, face * faces, long int numverts, long int numfaces
-					, long int numedges, int has_normals, colour paint);
+void write_coff_file( FILE * outfile, FILE * colourfile, vector * vertices, vector * normals
+			, face * faces, long int numverts, long int numfaces, long int numedges
+			, int has_normals, int stitch_colours, colour paint);

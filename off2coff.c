@@ -6,6 +6,7 @@ int main( int argc, char ** argv )
 {
 	FILE * infile;
 	FILE * outfile;
+	FILE * colourfile;
 
 	vector * vertices = NULL;
 	vector * normals = NULL;
@@ -13,20 +14,28 @@ int main( int argc, char ** argv )
 
 	long int numverts, numfaces, numedges;
 	int has_normals = 0;
+	int stitch_colours = 0;
 	colour paint;
 
-	if( argc != 5 )
+	if( argc < 3 )
 	{
 		printf("Syntax is: %s <input-file> <output-file> <red> <green> <blue>\n", argv[0]);
+		printf("alternatively: %s <input-file> <output-file> <colour-file>\n", argv[0]);
 		printf("<red>, <green> and <blue> are integers in the range 0-255.\n");
 		return 0;
 	}
 
 	infile	= fopen( argv[1], "r" );
 
-	paint.r = atoi(argv[3]);
-	paint.g = atoi(argv[4]);
-	paint.b = atoi(argv[5]);
+	if( argc == 5 ){
+		paint.r = atoi(argv[3]);
+		paint.g = atoi(argv[4]);
+		paint.b = atoi(argv[5]);
+	}
+	else{
+		stitch_colours = 1;
+		colourfile = fopen( argv[3], "r" );
+	}
 
 	/* if it's a NOFF file, take an extra character */
 	if( 'N' == fgetc(infile) )
@@ -52,7 +61,7 @@ int main( int argc, char ** argv )
 	fclose(infile);
 
 	outfile = fopen( argv[2], "w");
-	write_coff_file(outfile, vertices, normals, faces, numverts, numfaces, numedges, has_normals, paint);
+	write_coff_file(outfile, colourfile, vertices, normals, faces, numverts, numfaces, numedges, has_normals, stitch_colours, paint);
 	fclose(outfile);
 
 	return 0;
@@ -92,8 +101,8 @@ void read_face_data( FILE * infile, face* faces, long int numfaces )
 	return;
 }
 
-void write_coff_file( FILE * outfile, vector * vertices, vector * normals, face * faces, long int numverts, long int numfaces
-					, long int numedges, int has_normals, colour paint)
+void write_coff_file( FILE * outfile, FILE * colourfile, vector * vertices, vector * normals, face * faces, long int numverts, long int numfaces
+					, long int numedges, int has_normals, int stitch_colours, colour paint)
 {
 	long int fi, vi = 0;
 	int side;
@@ -115,7 +124,12 @@ void write_coff_file( FILE * outfile, vector * vertices, vector * normals, face 
 		for(side = 0; side != faces[fi].sides; ++side)
 			fprintf(outfile, "%ld ", faces[fi].verts[side] );
 
-		fprintf(outfile, "%d %d %d\n", paint.r, paint.g, paint.b);
+		if( stitch_colours ){
+			fscanf( colourfile, " %d %d %d", &paint.r, &paint.g, &paint.b );
+			fprintf(outfile, "%d %d %d\n", paint.r, paint.g, paint.b);
+		}
+		else
+			fprintf(outfile, "%d %d %d\n", paint.r, paint.g, paint.b);
 	}
 
 	return;

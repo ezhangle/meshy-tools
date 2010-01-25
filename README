@@ -1,8 +1,8 @@
 OFFtools (v0.7)
 --------
 
-These programs are release under a 2-clause BSD licence (see LICENCE for
-details), but I'd appreciate it if you could drop me an email on
+These programs are release under a 2-clause BSD licence (see LICENCE),
+but I'd appreciate it if you could drop me an email on
 d.kaye@dunelm.org.uk and let me know if you find them useful.
 
 To build, just type "make" in this directory. These programs have been
@@ -12,8 +12,7 @@ other platforms. Bug reports are welcome.
 
 COFF and OFF files are both dealt with transparently, likewise CNOFF and
 NOFF files. Whilst coff2off and noff2off dump the extra information to
-an external file I haven't yet written a program to recombine them. At
-this point they will be at version 1.0.
+an external file, which can be recombined later.
 
 
 off2noff
@@ -23,15 +22,20 @@ barycentre (``centre of mass'') for each face. It then computes the
 normal of a vertex as a weighted sum of all adjacent face-normals. The
 weights are 1 / (1 + dist to barycentre ).
 
+If a file of normal data is provided, this will be used instead of
+calculating the normal information.
+
 
 noff2off
 --------
-removes normals from a NOFF file and dumps them to an external file
+Removes normals from a NOFF file and dumps them to an external file
 
 
 off2coff
 --------
-takes r,g and b values and applies this colour to all faces.
+Takes r,g and b values and applies this colour to all faces.
+
+If a colour file is provided, it will apply these colours.
 
 
 coff2off

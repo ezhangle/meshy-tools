@@ -34,8 +34,9 @@ void find_face_associations(face * faces, vertex * vertices, long int numfaces, 
 
 void calc_vertex_normals( vertex * vertices, face * faces, long int numfaces, long int numverts );
 
-void write_noff_file( FILE * outfile, long int numverts, long int numfaces
-			, long int numedges, vertex * vertices, face * faces, colour * colours, int is_coloured );
+void write_noff_file( FILE * outfile, FILE * normfile, long int numverts, long int numfaces
+			, long int numedges, vertex * vertices, face * faces, colour * colours
+			, int is_coloured, int stitch_normals );
 
 double vector_dist( vector A, vector B);
 

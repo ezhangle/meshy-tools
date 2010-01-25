@@ -24,7 +24,8 @@ int main( int argc, char ** argv )
 	infile	= fopen( argv[1], "r" );
 	colour_dump = fopen( argv[3], "w");
 
-	/* if it's a NOFF file, take an extra character */
+	/* if it's a CNOFF file, note the fact and take an extra character */
+	fgetc(infile);
 	if( 'N' == fgetc(infile) )
 	{
 		has_normals = 1;
