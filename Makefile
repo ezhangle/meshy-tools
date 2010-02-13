@@ -1,26 +1,25 @@
 CC=gcc
-CFLAGS=-pedantic -Wall -ansi
+CFLAGS=-pedantic -Wall -std=c89
 
-all:
-	$(CC) $(CFLAGS) -lm -o off2noff	off2noff.c
-	$(CC) $(CFLAGS) -lm -o noff2off	noff2off.c
-	$(CC) $(CFLAGS) -lm -o off2coff	off2coff.c
-	$(CC) $(CFLAGS) -lm -o coff2off	coff2off.c
+all: strip_colours strip_normals
 
-off2noff: off2noff.c	off2noff.h
-	$(CC) $(CFLAGS) -lm -o off2noff	off2noff.c
+strip_colours: strip_colour.o utilities.o
+	$(CC) $(CFLAGS) -o strip_colours strip_colour.o utilities.o
 
-noff2off: noff2off.c	noff2off.h
-	$(CC) $(CFLAGS) -lm -o noff2off	noff2off.c
+strip_colour.o: strip_colour.c utilities.h
+	$(CC) $(CFLAGS) -c strip_colour.c
 
-off2coff: off2coff.c	off2coff.h
-	$(CC) $(CFLAGS) -lm -o off2coff	off2coff.c
+strip_normals: strip_normal.o utilities.o
+	$(CC) $(CFLAGS) -o strip_normals strip_normal.o utilities.o
 
-coff2off: coff2off.c	coff2off.h
-	$(CC) $(CFLAGS) -lm -o coff2off	coff2off.c
+strip_normal.o: strip_normal.c utilities.h
+	$(CC) $(CFLAGS) -c strip_normal.c
+
+utilities.o: utilities.c utilities.h
+	$(CC) $(CFLAGS) -c utilities.c
+
 
 clean:
-	rm off2noff
-	rm noff2off
-	rm off2coff
-	rm coff2off
+	rm *.o
+	rm strip_colours
+	rm strip_normals

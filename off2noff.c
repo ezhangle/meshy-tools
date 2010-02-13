@@ -20,7 +20,7 @@ int main( int argc, char **argv )
 	long int numverts, numfaces, numedges;
 
 	/* tell people about the syntax if they don't get it right */
-	if( argc == 0 ){
+	if( argc < 3 ){
 		printf("Syntax is: %s <input-file> <output-file> <normal_file>\n", argv[0]);
 		printf("<input-file> can be the same as <output-file>.\n");
 		printf("If <normal_file> is provided, its normal data will be used instead of calculating normals\n");
