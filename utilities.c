@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "utilities.h"
 
-void read_vertex_data(FILE * infile, vector* vertices, vector * normals, long int numverts, int has_normals )
+void read_vertex_data(FILE * infile, vertex *vertices, vector * normals, long int numverts, int has_normals )
 {
 	long int vi = 0;
 
@@ -37,7 +37,7 @@ void read_face_data( FILE * infile, face* faces, colour * colours, long int numf
 	return;
 }
 
-void write_off_file( FILE * outfile, vector * vertices, vector * normals, face * faces, colour * colours, long int numverts, long int numfaces, long int numedges, int write_normals, int write_colours )
+void write_off_file( FILE * outfile, vertex * vertices, vector * normals, face * faces, colour * colours, long int numverts, long int numfaces, long int numedges, int write_normals, int write_colours )
 {
 	long int fi, vi = 0;
 	int side;

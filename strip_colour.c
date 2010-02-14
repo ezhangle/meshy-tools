@@ -10,7 +10,7 @@ int main( int argc, char ** argv )
 	FILE * outfile;
 	FILE * colour_dump;
 
-	vector * vertices = NULL;
+	vertex * vertices = NULL;
 	vector * normals = NULL;
 	face * faces = NULL;
 	colour * colours = NULL;
@@ -49,7 +49,7 @@ int main( int argc, char ** argv )
 	fscanf(infile, " %ld", &numedges);		
 
 
-	vertices = malloc( numverts * sizeof(vector) );
+	vertices = malloc( numverts * sizeof(vertex) );
 	faces = malloc( numfaces * sizeof(face) );
 	colours = malloc( numfaces * sizeof(colour) );
 	if( has_normals )
