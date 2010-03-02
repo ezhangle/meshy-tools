@@ -2,6 +2,30 @@
 #include <stdlib.h>
 #include "utilities.h"
 
+
+void read_off_header(FILE * infile, int * has_normals, int * has_colour, unsigned long int *numverts
+		, unsigned long int *numfaces, unsigned long int *numedges)
+{
+	char c = fgetc(infile);
+
+	if( 'C' == c )
+	{
+		c = fgetc(infile);
+		*has_colour = 1;
+	}
+
+	if( 'N' == c )
+	{
+		c = fgetc(infile);
+		*has_normals = 1;
+	}
+	
+	fgetc(infile);
+	fgetc(infile);
+
+	return;
+}
+
 void read_vertex_data(FILE * infile, vertex *vertices, vector * normals, long int numverts, int has_normals )
 {
 	long int vi = 0;
@@ -28,10 +52,22 @@ void read_face_data( FILE * infile, face* faces, colour * colours, long int numf
 		faces[fi].verts = malloc( faces[fi].sides * sizeof(long int) );
 
 		for( side=0; side != faces[fi].sides; ++side )
-			fscanf( infile, " %ld", &faces[fi].verts[side] );
+		{
+			if( EOF == fscanf( infile, " %ld", &faces[fi].verts[side] ) )
+			{
+				fprintf(stderr, "Error reading face data, exiting\n");
+				exit(1);
+			}
+		}
 
 		if( has_colour )
-			fscanf( infile, " %d %d %d", &colours[fi].r, &colours[fi].g, &colours[fi].b );
+		{
+			if( EOF == fscanf( infile, " %d %d %d", &colours[fi].r, &colours[fi].g, &colours[fi].b ) )
+			{
+				fprintf(stderr, "Error reading face data, exiting\n");
+				exit(1);
+			}
+		}
 	}
 
 	return;

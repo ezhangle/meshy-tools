@@ -21,11 +21,10 @@ int main( int argc, char **argv )
 	fc_normal * face_normals = NULL;
 	colour * colours = NULL;
 
-	char c;
-	int has_colours = 0;
+	int has_colour = 0;
 	int stitch_normals = 0;
 	int has_normals = 0;
-	long int numverts, numfaces, numedges;
+	unsigned long int numverts, numfaces, numedges;
 
 	/* tell people about the syntax if they don't get it right */
 	if( argc < 2 ){
@@ -40,36 +39,29 @@ int main( int argc, char **argv )
 	if( argv[3] != NULL )
 		stitch_normals = 1;
 
-	c = fgetc(infile);
-	/* if it's a COFF file then note this and take and extra character */
-	if( c == 'C' )
-	{
-		fgetc(infile);
-		has_colours = 1;
-	}
-	else
-	{
-		has_colours = 0;
-	}
-	fgetc(infile);
-	fgetc(infile);	
+	read_off_header(infile, &has_normals, &has_colour, &numverts, &numfaces, &numedges);
 
-	fscanf(infile, " %ld", &numverts);	
-	fscanf(infile, " %ld", &numfaces);		
-	fscanf(infile, " %ld", &numedges);		
-	
-	if( has_colours )
+	if( has_normals )
+	{
+		fprintf(stderr, "The file header claims that normals are included, exiting.\n");
+		fclose(infile);
+		exit(1);	
+	}
+
+	vertices = malloc( numverts * sizeof(vertex) );
+	faces = malloc( numfaces * sizeof(face) );
+	if( has_colour )
 		colours = malloc( numfaces* sizeof(colour) );
 
 	/* if any memory allocation fails, just die */
-	if( vertices == NULL || faces== NULL || (has_colours && colours == NULL) )
+	if( vertices == NULL || faces== NULL || (has_colour && colours == NULL) )
 	{
 		fprintf(stderr, "inital memory allocation failed.\n");
 		exit(1);
 	}
 
 	read_vertex_data( infile, vertices, vert_normals, numverts, has_normals );
-	read_face_data(	infile, faces, colours, numfaces, has_colours );
+	read_face_data(	infile, faces, colours, numfaces, has_colour );
 	fclose(infile);
 
 	if( stitch_normals == 0 )
@@ -86,7 +78,7 @@ int main( int argc, char **argv )
 	}
 
 	outfile = fopen( argv[2], "w" );
-	write_off_file( outfile, vertices, vert_normals, faces, colours, numverts, numfaces, numedges, !has_normals, has_colours );
+	write_off_file( outfile, vertices, vert_normals, faces, colours, numverts, numfaces, numedges, !has_normals, has_colour );
 	fclose(outfile);
 
 	printf("done.\n");

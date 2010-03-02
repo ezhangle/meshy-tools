@@ -1,11 +1,8 @@
-/* a vertex augmented with normal information and associated face data */
 #include "utilities.h"
 
-typedef struct{
-	vector centre;
-	vector norm;
-} fc_normal;
+typedef struct{ vector centre, norm; } fc_normal;
 
+/* a vertex augmented with normal information and associated face data */
 typedef struct{
 	int assoc_faces;
 	long int *faces;
