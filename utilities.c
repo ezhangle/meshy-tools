@@ -23,6 +23,8 @@ void read_off_header(FILE * infile, int * has_normals, int * has_colour, unsigne
 	fgetc(infile);
 	fgetc(infile);
 
+	fscanf(infile, "%lu %lu %lu", numverts, numfaces, numedges);
+
 	return;
 }
 

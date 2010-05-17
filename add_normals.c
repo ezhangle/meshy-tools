@@ -36,9 +36,6 @@ int main( int argc, char **argv )
 	
 	infile = fopen( argv[1], "r" );
 
-	if( argv[3] != NULL )
-		stitch_normals = 1;
-
 	read_off_header(infile, &has_normals, &has_colour, &numverts, &numfaces, &numedges);
 
 	if( has_normals )
@@ -48,7 +45,16 @@ int main( int argc, char **argv )
 		exit(1);	
 	}
 
+	if( argv[3] != NULL )
+		stitch_normals = 1;
+	else
+	{
+		vert_aug = malloc( numverts * sizeof(vert_extra) );
+		face_normals = malloc( numfaces * sizeof(fc_normal) );
+	}
+
 	vertices = malloc( numverts * sizeof(vertex) );
+	vert_normals = malloc( numverts * sizeof(vector) );
 	faces = malloc( numfaces * sizeof(face) );
 	if( has_colour )
 		colours = malloc( numfaces* sizeof(colour) );
@@ -64,10 +70,13 @@ int main( int argc, char **argv )
 	read_face_data(	infile, faces, colours, numfaces, has_colour );
 	fclose(infile);
 
+	fprintf(stderr, "read all data\n");
 	if( stitch_normals == 0 )
 	{
 		calc_face_normals( faces, face_normals, vertices, numfaces);
+		fprintf(stderr, "calcd FNs\n");
 		find_face_associations( faces, vertices, vert_aug, numfaces, numverts );
+		fprintf(stderr, "FFa done\n");
 		calc_vertex_normals( vertices, vert_normals, vert_aug, faces, face_normals, numfaces, numverts );
 	}
 	else
@@ -76,6 +85,7 @@ int main( int argc, char **argv )
 		read_normal_file(normfile, vert_normals, numverts);
 		fclose(normfile);
 	}
+	fprintf(stderr, "here\n");
 
 	outfile = fopen( argv[2], "w" );
 	write_off_file( outfile, vertices, vert_normals, faces, colours, numverts, numfaces, numedges, !has_normals, has_colour );
@@ -218,6 +228,8 @@ void calc_vertex_normals( vertex * vertices, vector *vert_normals, vert_extra * 
 	long int vi = 0;
 	int afi;		/* associated facesindex */
 	double * barycentre_dist = NULL;
+
+	fprintf(stderr, "v=%p, vn=%p, ve=%p, f=%p, fn=%p\n", (void*)vertices, (void*)vert_normals, (void*)vert_aug, (void*)faces, (void*)face_normals);
 
 	for(; vi != numverts; ++vi)
 	{
