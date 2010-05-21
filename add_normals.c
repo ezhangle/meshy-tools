@@ -24,7 +24,7 @@ int main( int argc, char **argv )
 	int has_colour = 0;
 	int stitch_normals = 0;
 	int has_normals = 0;
-	unsigned long int numverts, numfaces, numedges;
+	unsigned long int numverts=0, numfaces=0, numedges=0;
 
 	/* tell people about the syntax if they don't get it right */
 	if( argc < 2 ){
@@ -56,11 +56,16 @@ int main( int argc, char **argv )
 	vertices = malloc( numverts * sizeof(vertex) );
 	vert_normals = malloc( numverts * sizeof(vector) );
 	faces = malloc( numfaces * sizeof(face) );
+	face_normals = malloc( numfaces * sizeof(fc_normal) );
+	vert_aug = malloc( numverts * sizeof(vert_extra) );
+	vert_normals = malloc( numverts * sizeof(vector) );
+
 	if( has_colour )
 		colours = malloc( numfaces* sizeof(colour) );
 
 	/* if any memory allocation fails, just die */
-	if( vertices == NULL || faces== NULL || (has_colour && colours == NULL) )
+	if( vertices == NULL || faces== NULL || (has_colour && colours == NULL) 
+		|| face_normals == NULL || vert_aug==NULL || vert_normals==NULL )
 	{
 		fprintf(stderr, "inital memory allocation failed.\n");
 		exit(1);
