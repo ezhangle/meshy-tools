@@ -1,43 +1,46 @@
-OFFtools (v0.7)
---------
+OFFtools (v0.8) ---------------
 
 These programs are release under a 2-clause BSD licence (see LICENCE),
 but I'd appreciate it if you could drop me an email on
 d.kaye@dunelm.org.uk and let me know if you find them useful.
 
-To build, just type "make" in this directory. These programs have been
-written and (partially) tested on OpenBSD/amd64, the compile with -Wall
--pedantic and -ansi without any complaints so they should work fine on
-other platforms. Bug reports are welcome.
+To build, just type "make" in this directory.  These programs have been
+written and (partially) tested on OpenBSD/amd64, the compile with using
+GCC with -Wall -Wextra -pedantic and -std=c89 without any complaints so
+they should work fine on other platforms.  Bug reports are welcome.
 
 COFF and OFF files are both dealt with transparently, likewise CNOFF and
-NOFF files. Whilst coff2off and noff2off dump the extra information to
-an external file, which can be recombined later.
+NOFF files.
 
 
-off2noff
---------
-Converts OFF files to NOFF files by calculating the normal and
-barycentre (``centre of mass'') for each face. It then computes the
-normal of a vertex as a weighted sum of all adjacent face-normals. The
+add_normals -----------
+
+Adds normal data to OFF and COFF files by calculating the normal and
+barycentre (``centre of mass'') for each face.  It then computes the
+normal of a vertex as a weighted sum of all adjacent face-normals.  The
 weights are 1 / (1 + dist to barycentre ).
 
 If a file of normal data is provided, this will be used instead of
 calculating the normal information.
 
 
-noff2off
---------
-Removes normals from a NOFF file and dumps them to an external file
+strip_normals -------------
+
+Remove normals from OFF and COFF files and (optionally) dump them to an
+external file.
 
 
-off2coff
---------
-Takes r,g and b values and applies this colour to all faces.
+add_colour ----------
 
-If a colour file is provided, it will apply these colours.
+Takes r,g and b values and applies this colour to all faces.  If a
+colour file is provided, these will be provided.
 
 
-coff2off
---------
-removes colours from a COFF file and dumps it to an external file
+strip_colour ------------
+
+Remove colour data from a COFF or CNOFF file and (optionally) dump them
+to an external file.
+
+orient_norms -------------
+
+Consistently orients the normals in a NOFF file.

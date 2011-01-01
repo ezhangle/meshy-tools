@@ -10,10 +10,10 @@ int main( int argc, char ** argv )
 	FILE * outfile;
 	FILE * colour_dump;
 
-	vertex * vertices = NULL;
-	vector * normals = NULL;
-	face * faces = NULL;
-	colour * colours = NULL;
+	vertex *vertices = NULL;
+	vector *normals = NULL;
+	face *faces = NULL;
+	colour *colours = NULL;
 
 	unsigned long int numverts, numfaces, numedges;
 	int has_normals = 0;
@@ -39,24 +39,46 @@ int main( int argc, char ** argv )
 
 	vertices = malloc( numverts * sizeof(vertex) );
 	faces = malloc( numfaces * sizeof(face) );
-	colours = malloc( numfaces * sizeof(colour) );
+	colours = malloc( numverts * sizeof(colour) );
 
 	if( has_normals )
 		normals = malloc( numverts * sizeof(vector) );
 
-	read_vertex_data(infile, vertices, normals, numverts, has_normals);
-	read_face_data(infile, faces, colours, numfaces, has_colour );
+	read_vertex_data(infile
+		, vertices
+		, normals
+		, colours
+		, numverts
+		, has_normals
+		, has_colour );
+
+	read_face_data(infile
+		, faces
+		, numfaces );
 
 	fclose(infile);
 
 	outfile = fopen( argv[2], "w");
 	/* !has_colour because we don't want to print the colour data here */
-	write_off_file(outfile, vertices, normals, faces, colours, numverts, numfaces, numedges, has_normals, !has_colour );
+	write_off_file(outfile
+		, vertices
+		, normals
+		, faces
+		, colours
+		, numverts
+		, numfaces
+		, numedges
+		, has_normals
+		, !has_colour );
 	fclose(outfile);
 
 	colour_dump = fopen( argv[3], "w");
-	write_colour_file( colour_dump, colours, numfaces );
-	fclose(colour_dump);
+	if(has_colour && colour_dump != NULL)
+	{
+		write_colour_file( colour_dump, colours, numverts );
+		fclose(colour_dump);
+	}
+	else if(!has_colour && colour_dump != NULL)
 
 	free(vertices);
 	free(faces);
@@ -72,7 +94,7 @@ void write_colour_file( FILE * colour_file, colour *colours, long int numfaces )
 	long int fi = 0;
 
 	for(; fi != numfaces; ++fi)
-		fprintf(colour_file, "%d %d %d\n", colours[fi].r, colours[fi].g, colours[fi].b);
+		fprintf(colour_file, "%f %f %f\n", colours[fi].r, colours[fi].g, colours[fi].b);
 
 	return;
 }

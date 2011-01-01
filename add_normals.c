@@ -4,8 +4,9 @@
 
 #include "add_normals.h"
 
-/**	This program is off2noff, it calculates vertex normals from the facesand creates a NOFF file
-	if the input is a COFF file, it generates a CNOFF file
+/*
+*	This program calculates vertex normals from the faces and creates a
+*	NOFF file if the input is a COFF file, it generates a CNOFF file
 */
 
 int main( int argc, char **argv )
@@ -27,10 +28,12 @@ int main( int argc, char **argv )
 	unsigned long int numverts=0, numfaces=0, numedges=0;
 
 	/* tell people about the syntax if they don't get it right */
-	if( argc < 2 ){
-		printf("Syntax is: %s <input-file> <output-file> <normal_file>\n", argv[0]);
-		printf("<input-file> can be the same as <output-file>.\n");
-		printf("If <normal_file> is provided, its normal data will be used instead of calculating normals\n");
+	if( argc != 2 && argc != 3){
+		printf(	"Syntax is: %s <input-file> <output-file> "
+			"<normal_file>\n", argv[0]);
+		printf(	"<input-file> can be the same as <output-file>.\n");
+		printf(	"If <normal_file> is provided, its normal data "
+			"will be used instead of calculating normals\n");
 		return 0;
 	}
 	
@@ -61,7 +64,7 @@ int main( int argc, char **argv )
 	vert_normals = malloc( numverts * sizeof(vector) );
 
 	if( has_colour )
-		colours = malloc( numfaces* sizeof(colour) );
+		colours = malloc( numverts* sizeof(colour) );
 
 	/* if any memory allocation fails, just die */
 	if( vertices == NULL || faces== NULL || (has_colour && colours == NULL) 
@@ -71,18 +74,27 @@ int main( int argc, char **argv )
 		exit(1);
 	}
 
-	read_vertex_data( infile, vertices, vert_normals, numverts, has_normals );
-	read_face_data(	infile, faces, colours, numfaces, has_colour );
+	read_vertex_data(infile
+		, vertices
+		, vert_normals
+		, colours
+		, numverts
+		, has_normals
+		, has_colour);
+
+	read_face_data(infile, faces, numfaces);
 	fclose(infile);
 
 	fprintf(stderr, "read all data\n");
 	if( stitch_normals == 0 )
 	{
 		calc_face_normals( faces, face_normals, vertices, numfaces);
-		fprintf(stderr, "calcd FNs\n");
-		find_face_associations( faces, vertices, vert_aug, numfaces, numverts );
-		fprintf(stderr, "FFa done\n");
-		calc_vertex_normals( vertices, vert_normals, vert_aug, faces, face_normals, numfaces, numverts );
+		find_face_associations(faces, vert_aug, numfaces);
+		calc_vertex_normals( vertices, vert_normals, vert_aug
+				, face_normals, numverts );
+
+		free(face_normals);
+		face_normals = NULL;
 	}
 	else
 	{
@@ -90,10 +102,18 @@ int main( int argc, char **argv )
 		read_normal_file(normfile, vert_normals, numverts);
 		fclose(normfile);
 	}
-	fprintf(stderr, "here\n");
 
 	outfile = fopen( argv[2], "w" );
-	write_off_file( outfile, vertices, vert_normals, faces, colours, numverts, numfaces, numedges, !has_normals, has_colour );
+	write_off_file( outfile
+		, vertices
+		, vert_normals
+		, faces
+		, colours
+		, numverts
+		, numfaces
+		, numedges
+		, 1
+		, has_colour );
 	fclose(outfile);
 
 	printf("done.\n");
@@ -101,7 +121,9 @@ int main( int argc, char **argv )
 }
 
 /* read normal data */
-void read_normal_file( FILE * normal_file, vector * vert_normals, long int numverts )
+void read_normal_file( FILE * normal_file
+	, vector * vert_normals
+	, long int numverts )
 {
 	long int vi=0;
 	for(; vi!=numverts; ++vi)
@@ -130,10 +152,14 @@ void normalise_vector( vector* A )
 	return;
 }
 
-/** calculate a face normal by taking the cross product of two of its sides
-the orientation is not considered (are faces' vertex lists consistently clockwise?)
+/**	calculate a face normal by taking the cross product of two of its sides
+*	the orientation is not considered (are faces' vertex lists consistently 
+*	clockwise?)
 */
-void calc_face_normals( face * faces, fc_normal *face_normals,  vertex * vertices, long int numfaces)
+void calc_face_normals( face * faces
+	, fc_normal *face_normals
+	,  vertex * vertices
+	, long int numfaces)
 {
 	vector A, B;
 	long int fi, first, second, third;
@@ -163,7 +189,9 @@ void calc_face_normals( face * faces, fc_normal *face_normals,  vertex * vertice
 	return;
 }
 
-void calc_face_barycentre( vertex * vertices, face * base, fc_normal * face_norm )
+void calc_face_barycentre( vertex * vertices
+	, face * base
+	, fc_normal * face_norm )
 {
 	int i = 0;
 	face_norm->centre.x = face_norm->centre.y = face_norm->centre.z = 0;
@@ -183,7 +211,9 @@ void calc_face_barycentre( vertex * vertices, face * base, fc_normal * face_norm
 }
 
 /** find all facesthat each vertex borders */
-void find_face_associations( face * faces, vertex * vertices, vert_extra * vert_aug, long int numfaces, long int numverts )
+void find_face_associations( face * faces
+	, vert_extra * vert_aug
+	, long int numfaces )
 {
 	long int vi, fi, size_needed;
 	int i=0;
@@ -194,10 +224,10 @@ void find_face_associations( face * faces, vertex * vertices, vert_extra * vert_
 		{
 			vi = faces[fi].verts[i];
 			vert_aug[vi].assoc_faces++;
-			size_needed = vert_aug[vi].assoc_faces * sizeof(long int);
+			size_needed = vert_aug[vi].assoc_faces * sizeof(long);
 
 			vert_aug[vi].faces = realloc( vert_aug[vi].faces, size_needed );
-			if( vert_aug[vi].faces== NULL )
+			if( vert_aug[vi].faces==NULL )
 			{
 				fprintf(stderr, "memory allocation failed\n");
 				exit(1);
@@ -215,26 +245,25 @@ double vector_dist( vertex A, vector B)
 	double xdiff = A.x - B.x;
 	double ydiff = A.y - B.y;
 	double zdiff = A.z - B.z;
-	double dist = 0;
 
 	xdiff *= xdiff;
 	ydiff *= ydiff;
 	zdiff *= zdiff;
 	
-	dist = sqrt( xdiff + ydiff + zdiff );
-	return dist;
+	return sqrt( xdiff + ydiff + zdiff );
 }
 
 
-void calc_vertex_normals( vertex * vertices, vector *vert_normals, vert_extra * vert_aug
-		, face * faces, fc_normal *face_normals, long int numfaces, long int numverts )
+void calc_vertex_normals( vertex * vertices
+		, vector *vert_normals
+		, vert_extra * vert_aug
+		, fc_normal *face_normals
+		, long int numverts )
 {
 	long int face_ind = 0;
 	long int vi = 0;
 	int afi;		/* associated facesindex */
 	double * barycentre_dist = NULL;
-
-	fprintf(stderr, "v=%p, vn=%p, ve=%p, f=%p, fn=%p\n", (void*)vertices, (void*)vert_normals, (void*)vert_aug, (void*)faces, (void*)face_normals);
 
 	for(; vi != numverts; ++vi)
 	{

@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include "utilities.h"
 
-void write_normal_file( FILE * normal_file, vector *normals, long int numverts );
+void write_normal_file(FILE * normal_file
+			, vector *normals	
+			, long int numverts );
 
 int main( int argc, char ** argv )
 {
@@ -39,23 +41,44 @@ int main( int argc, char ** argv )
 
 	vertices = malloc( numverts * sizeof(vertex) );
 	faces = malloc( numfaces * sizeof(face) );
-	normals = malloc( numverts * sizeof(vector) );
-	if( has_colour )
-		colours = malloc( numfaces * sizeof(colour) );
 
-	read_vertex_data(infile, vertices, normals, numverts, has_normals);
-	read_face_data(infile, faces, colours, numfaces, has_colour );
+	if(argv[3] != NULL)
+		normals = malloc( numverts * sizeof(vector) );
+
+	if( has_colour )
+		colours = malloc( numverts * sizeof(colour) );
+
+	read_vertex_data(infile
+		, vertices
+		, normals
+		, colours
+		, numverts
+		, 1
+		, has_colour);
+
+	read_face_data(infile, faces, numfaces);
 
 	fclose(infile);
 
 	outfile = fopen( argv[2], "w");
-	/* !has_colour because we don't want to print the colour data here */
-	write_off_file(outfile, vertices, normals, faces, colours, numverts, numfaces, numedges, has_normals, !has_colour );
+	write_off_file(outfile
+		, vertices
+		, normals
+		, faces
+		, colours
+		, numverts
+		, numfaces
+		, numedges
+		, 0
+		, has_colour );
 	fclose(outfile);
 
 	normal_file = fopen( argv[3], "w");
-	write_normal_file(normal_file, normals, numverts);
-	fclose(normal_file);
+	if( normal_file != NULL )
+	{
+		write_normal_file(normal_file, normals, numverts);
+		fclose(normal_file);
+	}
 
 	free(vertices);
 	free(faces);
@@ -72,7 +95,8 @@ void write_normal_file( FILE * normal_file, vector *normals, long int numverts )
 	long int vi = 0;
 
 	for(; vi != numverts; ++vi)
-		fprintf(normal_file, "%f %f %f\n", normals[vi].x, normals[vi].y, normals[vi].z );
+		fprintf(normal_file, "%f %f %f\n"
+			, normals[vi].x, normals[vi].y, normals[vi].z );
 
 	return;
 }
