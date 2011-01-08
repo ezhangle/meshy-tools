@@ -26,6 +26,7 @@ int main( int argc, char **argv )
 	int stitch_normals = 0;
 	int has_normals = 0;
 	unsigned long int numverts=0, numfaces=0, numedges=0;
+	unsigned long i;
 
 	/* tell people about the syntax if they don't get it right */
 	if( argc != 2 && argc != 3){
@@ -72,6 +73,18 @@ int main( int argc, char **argv )
 	{
 		fprintf(stderr, "inital memory allocation failed.\n");
 		exit(1);
+	}
+
+	for(i=0; i!=numfaces; ++i)
+	{
+		faces[i].sides = 0;
+		faces[i].verts = NULL;
+	}
+
+	for(i=0; i!=numverts; ++i)
+	{
+		vert_aug[i].assoc_faces = 0;
+		vert_aug[i].faces = 0;
 	}
 
 	read_vertex_data(infile

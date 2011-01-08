@@ -1,5 +1,5 @@
 CC=gcc
-GCCFLAGS=-Wall -pedantic -std=c89 -Wextra
+GCCFLAGS=-Wall -pedantic -std=c89 -Wextra -g
 TCCFLAGS=-Wall -Wunsupported
 CLANGFLAGS=-ansi -pedantic -analyze
 CFLAGS=$(GCCFLAGS)

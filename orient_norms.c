@@ -172,14 +172,14 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	vertices = (vertex*)malloc(numverts * sizeof(*vertices));
+	vertices = malloc(numverts * sizeof(*vertices));
 	if(vertices==NULL)
 	{
 		fprintf(stderr, "Unable to allocate memory for vertices.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	normals = (vector*)malloc(numverts * sizeof(*normals));
+	normals = malloc(numverts * sizeof(*normals));
 	if(normals==NULL)
 	{
 		free(vertices);
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	faces = (face*)malloc(numfaces * sizeof(*faces));
+	faces = malloc(numfaces * sizeof(*faces));
 	if(faces==NULL)
 	{
 		free(normals);
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 
 	if(has_colour)
 	{
-		colours = (colour*)malloc(numverts * sizeof(*colours));
+		colours = malloc(numverts * sizeof(*colours));
 		if(colours==NULL)
 		{
 			free(vertices);

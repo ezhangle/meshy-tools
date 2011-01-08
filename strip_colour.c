@@ -21,15 +21,18 @@ int main( int argc, char ** argv )
 
 	if( argc != 3 )
 	{
-		printf("Syntax is: %s <input-file> <output-file> <where-to-dump-colours>\n", argv[0]);
+		printf("Syntax is: %s <input-file> <output-file>"
+			" <where-to-dump-colours>\n", argv[0]);
 		return 0;
 	}
 
 	infile	= fopen( argv[1], "r" );
 
-	read_off_header( infile, &has_normals, &has_colour, &numverts, &numfaces, &numedges );
+	read_off_header( infile, &has_normals, &has_colour
+				, &numverts, &numfaces, &numedges );
 
 	/* if it claims to have no colour data, exit */
+	fprintf(stderr, "hc = %d\n", has_colour);
 	if( !has_colour )
 	{
 		fprintf(stderr, "Header does not begin with 'C' - is this a C(N)OFF file?\n");

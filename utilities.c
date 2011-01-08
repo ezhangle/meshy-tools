@@ -53,10 +53,10 @@ void read_vertex_data(FILE * infile
 			fscanf(infile, " %*f %*f %*f");
 
 		if( has_colour && colours != NULL)
-			fscanf( infile, " %f %f %f", &colours[vi].r
+			fscanf( infile, " %f %f %f 1", &colours[vi].r
 				, &colours[vi].g, &colours[vi].b );
 		else if (has_colour && colours == NULL)
-			fscanf(infile, " %*f %*f %*f");
+			fscanf(infile, " %*f %*f %*f 1");
 	}
 
 	return;
@@ -71,8 +71,8 @@ void read_face_data( FILE * infile
 
 	for(; fi != numfaces; ++fi)
 	{
-		fscanf(infile, "%d", &faces[fi].sides);
-		faces[fi].verts = (long*)malloc( faces[fi].sides * sizeof(long) );
+		fscanf(infile, "%d ", &(faces[fi].sides));
+		faces[fi].verts = malloc( faces[fi].sides * sizeof(long) );
 
 		for(side=0; side != faces[fi].sides; ++side )
 		{
