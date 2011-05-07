@@ -24,22 +24,32 @@ int main(int argc, char **argv)
 	int has_colour = 0;
 	int stitch_colour = 0;
 	int has_normals = 0;
-	unsigned long int numverts, numfaces, numedges;
+
+	unsigned long numverts = 0;
+	unsigned long numfaces = 0;
+	unsigned long numedges = 0;
 
 	/* tell people about the syntax if they don't get it right */
-	if( argc < 2 ){
-		printf("Syntax is: %s <input-file> <output-file> <colour_file>\n", argv[0]);
-		printf("<input-file> can be the same as <output-file>.\n");
-		printf("If <colour_file> is provided, its colour data will be used\n");
-		printf("\n");
-		printf("To use a uniform colour colour, the syntax is:\n");
-		printf("%s <input-file> <output-file> <r> <g> <b>\n", argv[0]);
-		printf("where 0.0 < r, g, b < 1.0");
+	if( argc < 2 )
+	{
+		printf("Syntax is: %s <input> <output> <colour file>."
+			"<input> can be the same as <output>, "
+			"<colour file> iis optional."
+
+			"\nTo use a uniform colour colour, the syntax is:\n"
+			"%s <input-file> <output-file> <r> <g> <b>\n"
+			"where 0.0 < r, g, b < 1.0", argv[0], argv[0]);
 
 		return 0;
 	}
 	
 	infile = fopen( argv[1], "r" );
+
+	if(!infile)
+	{
+		fprintf(stderr, "Error opening %s, aborting.\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
 
 	if( argv[3] != NULL )
 		stitch_colour = 1;
@@ -55,20 +65,21 @@ int main(int argc, char **argv)
 	{
 		fprintf(stderr, "The file header claims that colour data are included, exiting.\n");
 		fclose(infile);
-		exit(1);	
+		exit(EXIT_FAILURE);	
 	}
 
-	vertices = malloc( numverts * sizeof(vertex) );
-	faces = malloc( numfaces * sizeof(face) );
-	colours = malloc( numverts * sizeof(colour) );
+	vertices = calloc(numverts, sizeof(vertex));
+	faces = calloc(numfaces, sizeof(face));
+	colours = calloc(numverts, sizeof(colour));
 	if( has_normals )
-		normals = malloc( numverts * sizeof(vector) );
+		normals = calloc(numverts, sizeof(vector));
 
 	/* if any memory allocation fails, just die */
-	if( vertices == NULL || faces== NULL || (has_normals && normals == NULL) || colours == NULL )
+	if( vertices == NULL || faces== NULL
+		|| (has_normals && normals == NULL) || colours == NULL )
 	{
 		fprintf(stderr, "Inital memory allocation failed.\n");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if( stitch_colour )
 		colourfile = fopen( argv[3], "r" );
@@ -111,9 +122,7 @@ int main(int argc, char **argv)
 	free(vertices);
 	free(faces);
 	free(colours);
-
-	if( has_normals )
-		free(normals);
+	free(normals);
 
 	return 0;
 }
@@ -128,11 +137,9 @@ void set_colours( FILE * colourfile
 	unsigned long int vi = 0;
 	float new_r, new_g, new_b;
 
-	new_r = atof( argv[3] );
-	new_g = atof( argv[4] );
-	new_b = atof( argv[5] );
-
-	/*fprintf(stderr, "%f %f %f\n", new_r, new_g, new_b);*/
+	new_r = (float)atof(argv[3]);
+	new_g = (float)atof(argv[4]);
+	new_b = (float)atof(argv[5]);
 
 	if( stitch_colour )
 		for(; vi!=numverts; ++vi)

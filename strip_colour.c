@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include "utilities.h"
 
-void write_colour_file( FILE * colour_file, colour *colours, long int numfaces );
+void write_colour_file(FILE *colour_file
+		, colour *colours
+		, unsigned long numverts);
 
 int main( int argc, char ** argv )
 {
@@ -15,7 +17,7 @@ int main( int argc, char ** argv )
 	face *faces = NULL;
 	colour *colours = NULL;
 
-	unsigned long int numverts, numfaces, numedges;
+	unsigned long numverts, numfaces, numedges;
 	int has_normals = 0;
 	int has_colour = 0;
 
@@ -35,17 +37,18 @@ int main( int argc, char ** argv )
 	fprintf(stderr, "hc = %d\n", has_colour);
 	if( !has_colour )
 	{
-		fprintf(stderr, "Header does not begin with 'C' - is this a C(N)OFF file?\n");
+		fprintf(stderr, "Header does not begin with 'C'"
+				" - is this a C(N)OFF file?\n");
 		fclose(infile);
 		exit(0);
 	}
 
-	vertices = malloc( numverts * sizeof(vertex) );
-	faces = malloc( numfaces * sizeof(face) );
-	colours = malloc( numverts * sizeof(colour) );
+	vertices = calloc(numverts, sizeof(vertex));
+	faces = calloc(numfaces, sizeof(face));
+	colours = calloc(numverts, sizeof(colour));
 
-	if( has_normals )
-		normals = malloc( numverts * sizeof(vector) );
+	if(has_normals)
+		normals = calloc(numverts, sizeof(vector));
 
 	read_vertex_data(infile
 		, vertices
@@ -78,7 +81,7 @@ int main( int argc, char ** argv )
 	colour_dump = fopen( argv[3], "w");
 	if(has_colour && colour_dump != NULL)
 	{
-		write_colour_file( colour_dump, colours, numverts );
+		write_colour_file(colour_dump, colours, numverts);
 		fclose(colour_dump);
 	}
 	else if(!has_colour && colour_dump != NULL)
@@ -92,12 +95,17 @@ int main( int argc, char ** argv )
 	return 0;
 }
 
-void write_colour_file( FILE * colour_file, colour *colours, long int numfaces )
+void write_colour_file(FILE *colour_file
+	, colour *colours
+	, unsigned long numverts)
 {
-	long int fi = 0;
+	unsigned long vi = 0;
 
-	for(; fi != numfaces; ++fi)
-		fprintf(colour_file, "%f %f %f\n", colours[fi].r, colours[fi].g, colours[fi].b);
+	for(; vi != numverts; ++vi)
+	{
+		fprintf(colour_file, "%f %f %f\n"
+			, colours[vi].r, colours[vi].g, colours[vi].b);
+	}
 
 	return;
 }

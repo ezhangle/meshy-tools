@@ -25,6 +25,8 @@ int needs_testing(test_pair *already_done
 	, unsigned long numpairs
 	, long vi);
 
+void free_faces(face *faces, unsigned long numfaces);
+
 void switch_orient(vector normals[], test_pair pair)
 {
 	vector *norm = &normals[pair.testee];
@@ -172,14 +174,14 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	vertices = malloc(numverts * sizeof(*vertices));
+	vertices = calloc(numverts, sizeof(*vertices));
 	if(vertices==NULL)
 	{
 		fprintf(stderr, "Unable to allocate memory for vertices.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	normals = malloc(numverts * sizeof(*normals));
+	normals = calloc(numverts, sizeof(*normals));
 	if(normals==NULL)
 	{
 		free(vertices);
@@ -187,7 +189,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	faces = malloc(numfaces * sizeof(*faces));
+	faces = calloc(numfaces, sizeof(*faces));
 	if(faces==NULL)
 	{
 		free(normals);
@@ -198,12 +200,12 @@ int main(int argc, char *argv[])
 
 	if(has_colour)
 	{
-		colours = malloc(numverts * sizeof(*colours));
+		colours = calloc(numverts, sizeof(*colours));
 		if(colours==NULL)
 		{
 			free(vertices);
 			free(normals);
-			free(faces);
+			free_faces(faces, numfaces);
 			fprintf(stderr, "No memory for colours\n");
 			exit(EXIT_FAILURE);
 		}
@@ -233,7 +235,7 @@ int main(int argc, char *argv[])
 				free(vert_list);
 				free(vertices);
 				free(normals);
-				free(faces);
+				free_faces(faces, numfaces);
 				free(colours);
 				fclose(infile);
 				fclose(outfile);
@@ -251,7 +253,7 @@ int main(int argc, char *argv[])
 				free(vert_list);
 				free(vertices);
 				free(normals);
-				free(faces);
+				free_faces(faces, numfaces);
 				free(colours);
 				fclose(infile);
 				fclose(outfile);
@@ -281,10 +283,24 @@ int main(int argc, char *argv[])
 	free(vert_list);
 	free(vertices);
 	free(normals);
-	free(faces);
+	free_faces(faces, numfaces);
 	free(colours);
 	fclose(infile);
 	fclose(outfile);
 	
 	return 0;
 }
+
+void free_faces(face *faces, unsigned long numfaces)
+{
+	unsigned long fi = 0;
+
+	for(; fi!=numfaces; ++fi)
+	{
+		free(faces[fi].verts);
+		faces[fi].verts = NULL;
+	}
+	free(faces);
+	return;
+}
+

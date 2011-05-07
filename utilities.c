@@ -9,17 +9,17 @@ void read_off_header(FILE * infile
 		, unsigned long int *numfaces
 		, unsigned long int *numedges)
 {
-	char c = fgetc(infile);
+	int ch = fgetc(infile);
 
-	if( 'C' == c )
+	if('C' == ch)
 	{
 		c = fgetc(infile);
 		*has_colour = 1;
 	}
 
-	if( 'N' == c )
+	if('N' == ch)
 	{
-		c = fgetc(infile);
+		ch = fgetc(infile);
 		*has_normals = 1;
 	}
 	
@@ -35,28 +35,36 @@ void read_vertex_data(FILE * infile
 	, vertex *vertices
 	, vector *normals
 	, colour *colours
-	, long int numverts
+	, unsigned long numverts
 	, int has_normals
 	, int has_colour)
 {
-	long int vi = 0;
+	unsigned long vi = 0;
 
 	for(; vi != numverts; ++vi)
 	{
 		fscanf(infile, " %f %f %f", &vertices[vi].x
 				, &vertices[vi].y, &vertices[vi].z );
 
-		if( has_normals && normals != NULL)
+		if(has_normals && normals != NULL)
+		{
 			fscanf(infile, " %f %f %f", &normals[vi].x
 				, &normals[vi].y, &normals[vi].z );
+		}
 		else if (has_normals && normals == NULL)
+		{
 			fscanf(infile, " %*f %*f %*f");
+		}
 
 		if( has_colour && colours != NULL)
+		{
 			fscanf( infile, " %f %f %f 1", &colours[vi].r
 				, &colours[vi].g, &colours[vi].b );
+		}
 		else if (has_colour && colours == NULL)
+		{
 			fscanf(infile, " %*f %*f %*f 1");
+		}
 	}
 
 	return;
@@ -64,14 +72,21 @@ void read_vertex_data(FILE * infile
 
 void read_face_data( FILE * infile
 	, face* faces
-	, long int numfaces)
+	, unsigned long numfaces)
 {
-	long int fi = 0;
-	unsigned short int side = 0;
+	unsigned long fi = 0;
+	unsigned short side = 0;
 
 	for(; fi != numfaces; ++fi)
 	{
-		fscanf(infile, "%d ", &(faces[fi].sides));
+		fscanf(infile, "%hu ", &(faces[fi].sides));
+		if(faces[fi].sides==0)
+		{
+			fprintf(stderr, "face %lu has 0 sides.\n", fi);
+			faces[fi].sides = NULL;
+			continue;
+		}
+
 		faces[fi].verts = malloc( faces[fi].sides * sizeof(long) );
 
 		for(side=0; side != faces[fi].sides; ++side )
@@ -80,7 +95,7 @@ void read_face_data( FILE * infile
 						, &faces[fi].verts[side] ) )
 			{
 				fprintf(stderr, "face data error, exiting\n");
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 		}
 	}
@@ -93,24 +108,24 @@ void write_off_file( FILE * outfile
 		, vector * normals
 		, face * faces
 		, colour * colours
-		, long int numverts
-		, long int numfaces
-		, long int numedges
+		, unsigned long numverts
+		, unsigned long numfaces
+		, unsigned long numedges
 		, int write_normals
 		, int write_colours )
 {
-	long int fi = 0, vi = 0;
-	int side;
+	unsigned long fi = 0, vi = 0;
+	unsigned short side;
 
-	if( write_colours )
-		fprintf( outfile, "C");
+	if(write_colours)
+		fprintf(outfile, "C");
 
-	if( write_normals )
-		fprintf( outfile, "N");
+	if(write_normals)
+		fprintf(outfile, "N");
 
-	fprintf( outfile, "OFF\n" );
+	fprintf(outfile, "OFF\n");
 
-	fprintf( outfile, "%ld %ld %ld\n", numverts, numfaces, numedges );
+	fprintf(outfile, "%lu %lu %lu\n", numverts, numfaces, numedges);
 
 	/* write the vertex data */
 	for(; vi != numverts; ++vi)
@@ -131,7 +146,7 @@ void write_off_file( FILE * outfile
 
 	for(; fi != numfaces; ++fi)
 	{
-		fprintf( outfile, "%d", faces[fi].sides );
+		fprintf(outfile, "%hu", faces[fi].sides);
 		if(faces[fi].sides == 0)
 			fprintf(stderr, "fucked\n");
 		for(side = 0; side != faces[fi].sides; ++side)
