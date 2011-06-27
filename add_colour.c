@@ -12,9 +12,9 @@ void set_colours( FILE * colourfile
 
 int main(int argc, char **argv)
 {
-	FILE * infile;
-	FILE * colourfile;
-	FILE * outfile;
+	FILE * infile = NULL;
+	FILE * colourfile = NULL;
+	FILE * outfile = NULL;
 
 	vertex * vertices = NULL;
 	vector * normals = NULL;
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
 			"\nTo use a uniform colour colour, the syntax is:\n"
 			"%s <input-file> <output-file> <r> <g> <b>\n"
-			"where 0.0 < r, g, b < 1.0", argv[0], argv[0]);
+			"where 0.0 < r, g, b < 1.0\n", argv[0], argv[0]);
 
 		return 0;
 	}
@@ -51,8 +51,11 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	if( argv[3] != NULL )
+	if( argc == 3 && argv[3] != NULL )
+	{
 		stitch_colour = 1;
+		colourfile = fopen( argv[3], "r" );
+	}
 
 	read_off_header(infile
 		, &has_normals
@@ -81,8 +84,6 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Inital memory allocation failed.\n");
 		exit(EXIT_FAILURE);
 	}
-	if( stitch_colour )
-		colourfile = fopen( argv[3], "r" );
 
 	read_vertex_data( infile
 		, vertices
@@ -142,16 +143,22 @@ void set_colours( FILE * colourfile
 	new_b = (float)atof(argv[5]);
 
 	if( stitch_colour )
+	{
+		for(; vi!=numverts; ++vi)
+		{
+			fscanf(colourfile, "%f %f %f",
+				&colours[vi].r, &colours[vi].g, &colours[vi].b);
+		}
+	}
+	else
+	{
 		for(; vi!=numverts; ++vi)
 		{
 			colours[vi].r = new_r;
 			colours[vi].g = new_g;
 			colours[vi].b = new_b;
 		}
-	else
-		for(; vi!=numverts; ++vi)
-			fscanf(colourfile, "%f %f %f", &colours[vi].r
-				, &colours[vi].g, &colours[vi].b);
+	}
 
 	/* we've now defined colours, so indicate this */
 	*has_colour = 1;

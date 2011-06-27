@@ -23,18 +23,21 @@ int main( int argc, char ** argv )
 
 	if( argc != 3 )
 	{
-		printf("Syntax is: %s <input-file> <output-file> <where-to-dump-normals>\n", argv[0]);
+		printf("Syntax is: %s <input-file> <output-file> "
+			"<where-to-dump-normals>\n", argv[0]);
 		return 0;
 	}
 
 	infile	= fopen( argv[1], "r" );
 
 	/* if it's a CNOFF file, note the fact and take an extra character */
-	read_off_header( infile, &has_normals, &has_colour, &numverts, &numfaces, &numedges );
+	read_off_header( infile, &has_normals, &has_colour
+				, &numverts, &numfaces, &numedges );
 
 	if( !has_normals )
 	{
-		fprintf(stderr, "Header does not begin with 'N' or 'CN' - is this a (C)NOFF file?\n");
+		fprintf(stderr, "Header does not begin with 'N' or 'CN'"
+				" - is this a (C)NOFF file?\n");
 		fclose(infile);
 		exit(0);
 	}
@@ -83,9 +86,7 @@ int main( int argc, char ** argv )
 	free(vertices);
 	free(faces);
 	free(normals);
-
-	if( has_colour )
-		free(colours);
+	free(colours);
 
 	return 0;
 }

@@ -2,18 +2,18 @@
 #include <stdlib.h>
 #include "utilities.h"
 
-void read_off_header(FILE * infile
-		, int * has_normals
-		, int * has_colour
-		, unsigned long int *numverts
-		, unsigned long int *numfaces
-		, unsigned long int *numedges)
+void read_off_header(FILE *infile
+		, int *has_normals
+		, int *has_colour
+		, unsigned long *numverts
+		, unsigned long *numfaces
+		, unsigned long *numedges)
 {
 	int ch = fgetc(infile);
 
 	if('C' == ch)
 	{
-		c = fgetc(infile);
+		ch = fgetc(infile);
 		*has_colour = 1;
 	}
 
@@ -134,12 +134,12 @@ void write_off_file( FILE * outfile
 			, vertices[vi].x, vertices[vi].y, vertices[vi].z );
 
 		if( write_normals )
-			fprintf(outfile, " %f %f %f", normals[vi].x
-				, normals[vi].y, normals[vi].z );
+			fprintf(outfile, " %f %f %f",
+				normals[vi].x, normals[vi].y, normals[vi].z );
 
 		if( write_colours )
-			fprintf(outfile, " %f %f %f"
-				, colours[fi].r, colours[fi].g, colours[fi].b );
+			fprintf(outfile, " %f %f %f",
+				colours[fi].r, colours[fi].g, colours[fi].b );
 
 		fprintf(outfile, "\n");
 	}

@@ -4,32 +4,22 @@
 
 #include "utilities.h"
 
-typedef struct {
-	long authority;
-	long testee;
-} test_pair;
-
 double distance(vector *A, vector *B);
 
-void switch_orient(vector normals[], test_pair pair);
-
-int add_test_pair(test_pair **pair_list
-	, unsigned long *numpairs
-	, test_pair *new_pair);
+void switch_orient(vector normals[]
+	, long vi);
 
 int consistent_orient(vertex vertices[]
 	, vector normals[]
-	, test_pair pair);
-
-int needs_testing(test_pair *already_done
-	, unsigned long numpairs
-	, long vi);
+	, long authorities[]
+	, long vert);
 
 void free_faces(face *faces, unsigned long numfaces);
 
-void switch_orient(vector normals[], test_pair pair)
+void switch_orient(vector normals[]
+	, long vi)
 {
-	vector *norm = &normals[pair.testee];
+	vector *norm = &normals[ vi ];
 
 	norm->x = -norm->x;
 	norm->y = -norm->y;
@@ -38,16 +28,19 @@ void switch_orient(vector normals[], test_pair pair)
 	return;
 }
 
-int consistent_orient(vertex vertices[], vector normals[], test_pair pair)
+int consistent_orient(vertex vertices[]
+	, vector normals[]
+	, long authorities[]
+	, long vi)
 {
 	/* positions of ends of normals */
 	vector pos_A, pos_B, neg_B;
 
-	vertex *A = &vertices[pair.authority];
-	vertex *B = &vertices[pair.testee];
+	vertex *A = &vertices[ authorities[vi] ];
+	vertex *B = &vertices[ vi ];
 
-	vector *norm_A = &normals[pair.authority];
-	vector *norm_B = &normals[pair.testee];
+	vector *norm_A = &normals[ authorities[vi] ];
+	vector *norm_B = &normals[ vi ];
 
 	pos_A.x = A->x + norm_A->x;
 	pos_A.y = A->y + norm_A->y;
@@ -80,43 +73,6 @@ double distance(vector *A, vector *B)
 	return sqrt(dx*dx + dy*dy + dz*dz);
 }
 
-int needs_testing(test_pair *already_done
-	, unsigned long numpairs
-	, long vi)
-{
-	unsigned long i = 0;
-	for(; i<numpairs; ++i)
-	{
-		if(already_done[i].authority == vi)
-			return 0;
-
-		if(already_done[i].testee == vi)
-			return 0;
-	}
-	return 1;
-}
-
-int add_test_pair(test_pair **pair_list
-	, unsigned long *numpairs
-	, test_pair *new_pair)
-{
-	test_pair *tmp = NULL;
-
-	tmp = realloc( *pair_list, (*numpairs +1) * sizeof(test_pair));
-	if(tmp==NULL)
-	{
-		fprintf(stderr, "Unable to allocate memory.\n");
-		return 0;
-	}
-	*pair_list = tmp;
-
-	(*pair_list)[*numpairs] = *new_pair;
-
-	++*numpairs;
-
-	return 1;
-}
-
 int main(int argc, char *argv[])
 {
 	int has_colour = 0;
@@ -127,12 +83,12 @@ int main(int argc, char *argv[])
 	vector *normals = NULL;
 	face *faces = NULL;
 
+	/* authorities[vertex in question] = authority on its orientation */
+	long *authorities = NULL;
+
 	unsigned long numfaces;
 	unsigned long numverts;
 	unsigned long numedges;
-
-	test_pair *vert_list = NULL;
-	test_pair tmp;
 
 	unsigned long numpairs = 0;
 	unsigned long fi = 0;
@@ -181,6 +137,15 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	authorities = calloc(numverts, sizeof(*authorities));
+	if(authorities==NULL)
+	{
+		fprintf(stderr, "Unable to allocate memory for authorities.\n");
+		exit(EXIT_FAILURE);
+	}
+	for(vi=0L; vi!=numverts; ++vi)
+		authorities[vi] = (long)-1;
+
 	normals = calloc(numverts, sizeof(*normals));
 	if(normals==NULL)
 	{
@@ -222,50 +187,25 @@ int main(int argc, char *argv[])
 
 	for(; fi<numfaces; ++fi)
 	{
-		if(fi%1000 == 0)
+		long int v = -1;
+
+		if((fi%1000) == 1)
 			fprintf(stderr, "fi = %lu\n", fi);
+		
+		v = faces[fi].verts[1];
 
-		if(needs_testing(vert_list, numpairs, faces[fi].verts[1]))
-		{
-			tmp.authority = faces[fi].verts[0];
-			tmp.testee = faces[fi].verts[1];
+		if(authorities[v] = -1L)
+			authorities[v] = fi;
 
-			if(0==add_test_pair(&vert_list, &numpairs, &tmp))
-			{
-				free(vert_list);
-				free(vertices);
-				free(normals);
-				free_faces(faces, numfaces);
-				free(colours);
-				fclose(infile);
-				fclose(outfile);
-				exit(EXIT_FAILURE);
-			}
-		}
-
-		if(needs_testing(vert_list, numpairs, faces[fi].verts[2]))
-		{
-			tmp.authority = faces[fi].verts[0];
-			tmp.testee = faces[fi].verts[2];
-
-			if(0==add_test_pair(&vert_list, &numpairs, &tmp))
-			{
-				free(vert_list);
-				free(vertices);
-				free(normals);
-				free_faces(faces, numfaces);
-				free(colours);
-				fclose(infile);
-				fclose(outfile);
-				exit(EXIT_FAILURE);
-			}
-		}
+		v = faces[fi].verts[2];
+		if(authorities[v] = -1L)
+			authorities[v] = fi;
 	}
 
-	for(; vi<numpairs; ++vi)
+	for(vi=0L; vi<numverts; ++vi)
 	{
-		if( !consistent_orient(vertices, normals, vert_list[vi]) )
-			switch_orient(normals, vert_list[vi]);
+		if( !consistent_orient(vertices, normals, authorities, vi))
+			switch_orient(normals, vi);
 	}
 
 	write_off_file(outfile
@@ -279,11 +219,10 @@ int main(int argc, char *argv[])
 		, has_normals
 		, has_colour);
 
-
-	free(vert_list);
 	free(vertices);
 	free(normals);
 	free_faces(faces, numfaces);
+	free(authorities);
 	free(colours);
 	fclose(infile);
 	fclose(outfile);

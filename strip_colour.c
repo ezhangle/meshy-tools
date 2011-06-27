@@ -8,9 +8,9 @@ void write_colour_file(FILE *colour_file
 
 int main( int argc, char ** argv )
 {
-	FILE * infile;
-	FILE * outfile;
-	FILE * colour_dump;
+	FILE * infile = NULL;
+	FILE * outfile = NULL;
+	FILE * colour_dump = NULL;
 
 	vertex *vertices = NULL;
 	vector *normals = NULL;

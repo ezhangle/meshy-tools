@@ -1,46 +1,48 @@
-OFFtools (v0.8) ---------------
+OFFtools (v0.9) ---------------
 
 These programs are release under a 2-clause BSD licence (see LICENCE),
 but I'd appreciate it if you could drop me an email on
-d.kaye@dunelm.org.uk and let me know if you find them useful.
+code@ethernull.org and let me know if you find them useful.
 
-To build, just type "make" in this directory.  These programs have been
-written and (partially) tested on OpenBSD/amd64, the compile with using
+To build, just type "make" in this directory. These programs have been
+written and (partially) tested on OpenBSD, the compile with using
 GCC with -Wall -Wextra -pedantic and -std=c89 without any complaints so
-they should work fine on other platforms.  Bug reports are welcome.
+they should be fine on other platforms. 
 
 COFF and OFF files are both dealt with transparently, likewise CNOFF and
 NOFF files.
 
-
-add_normals -----------
-
-Adds normal data to OFF and COFF files by calculating the normal and
-barycentre (``centre of mass'') for each face.  It then computes the
-normal of a vertex as a weighted sum of all adjacent face-normals.  The
-weights are 1 / (1 + dist to barycentre ).
-
-If a file of normal data is provided, this will be used instead of
-calculating the normal information.
+Known issues:
+	- add_normals does not compute normals correctly.
+	- orient_norms is slow for large files.
 
 
-strip_normals -------------
-
-Remove normals from OFF and COFF files and (optionally) dump them to an
+------strip_normals------
+Remove normals from NOFF and CNOFF files and (optionally) dump them to an
 external file.
 
+------add_normals------
+Adds normal data to OFF and COFF files by calculating the normal and
+barycentre (``centre of mass'') for each face. It then computes the
+normal of a vertex as a weighted sum of all adjacent face-normals. The
+weights are 1 / (1 + distance to barycentre).
 
-add_colour ----------
-
-Takes r,g and b values and applies this colour to all faces.  If a
-colour file is provided, these will be provided.
+If a file of per-vertex normal data is provided, these data will be
+used instead of calculating the normal information.
 
 
-strip_colour ------------
 
+------strip_colour------
 Remove colour data from a COFF or CNOFF file and (optionally) dump them
 to an external file.
 
-orient_norms -------------
+------add_colour------
+Takes r,g and b values and applies this colour to all faces.  If a
+colour file produced by strip_colour is provided, these colours will be
+used.
 
+
+
+------orient_norms------
 Consistently orients the normals in a NOFF file.
+
