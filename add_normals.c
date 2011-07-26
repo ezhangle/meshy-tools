@@ -49,6 +49,7 @@ int main( int argc, char **argv )
 		exit(1);	
 	}
 
+	/* argv[3] is the name of the file that contains normals */
 	if( argv[3] != NULL )
 		stitch_normals = 1;
 	else
@@ -60,18 +61,22 @@ int main( int argc, char **argv )
 	vertices = malloc( numverts * sizeof(vertex) );
 	vert_normals = malloc( numverts * sizeof(vector) );
 	faces = malloc( numfaces * sizeof(face) );
-	face_normals = malloc( numfaces * sizeof(fc_normal) );
-	vert_aug = malloc( numverts * sizeof(vert_extra) );
-	vert_normals = malloc( numverts * sizeof(vector) );
 
 	if( has_colour )
 		colours = malloc( numverts* sizeof(colour) );
 
 	/* if any memory allocation fails, just die */
-	if( vertices == NULL || faces== NULL || (has_colour && colours == NULL) 
-		|| face_normals == NULL || vert_aug==NULL || vert_normals==NULL )
+	if( vertices == NULL || faces == NULL || (has_colour && colours == NULL) 
+		|| (stitch_normals && face_normals == NULL)
+		|| (stitch_normals && vert_aug == NULL) || vert_normals==NULL )
 	{
 		fprintf(stderr, "inital memory allocation failed.\n");
+		free(vertices);
+		free(faces);
+		free(colours);
+		free(face_normals);
+		free(vert_aug);
+		free(vert_normals);
 		exit(1);
 	}
 
@@ -130,6 +135,14 @@ int main( int argc, char **argv )
 	fclose(outfile);
 
 	printf("done.\n");
+
+	free(vertices);
+	free(faces);
+	free(colours);
+	free(face_normals);
+	free(vert_aug);
+	free(vert_normals);
+
 	return 0;
 }
 

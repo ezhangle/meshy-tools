@@ -119,6 +119,7 @@ int main(int argc, char **argv)
 		, has_colour );
 
 	fclose(outfile);
+	fclose(colourfile);
 
 	free(vertices);
 	free(faces);
