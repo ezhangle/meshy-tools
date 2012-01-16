@@ -194,11 +194,11 @@ int main(int argc, char *argv[])
 		
 		v = faces[fi].verts[1];
 
-		if(authorities[v] = -1L)
+		if(authorities[v] == -1L)
 			authorities[v] = fi;
 
 		v = faces[fi].verts[2];
-		if(authorities[v] = -1L)
+		if(authorities[v] == -1L)
 			authorities[v] = fi;
 	}
 
