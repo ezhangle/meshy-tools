@@ -152,7 +152,7 @@ void calc_face_normals(struct OFF *mesh)
 
 	face *faces = mesh->faces;
 	fc_normal *face_normals = mesh->face_normals;
-	vertex *vertices = mesh->vertices;
+	vector *vertices = mesh->vertices;
 
 	for(fi = 0; fi !=mesh->numfaces; ++fi)
 	{
@@ -179,7 +179,7 @@ void calc_face_normals(struct OFF *mesh)
 	return;
 }
 
-void calc_face_barycentre( vertex * vertices
+void calc_face_barycentre( vector * vertices
 	, face * base
 	, fc_normal * face_norm )
 {
@@ -232,7 +232,7 @@ void find_face_associations(struct OFF *mesh)
 }
 
 /** find the Euclidean (straight line) distance between two points */
-double vector_dist( vertex A, vector B)
+double vector_dist( vector A, vector B)
 {
 	double xdiff = A.x - B.x;
 	double ydiff = A.y - B.y;
@@ -253,7 +253,7 @@ void calc_vertex_normals(struct OFF *mesh)
 	int afi;		/* associated facesindex */
 	double * barycentre_dist = NULL;
 
-	vertex * vertices = mesh->vertices;
+	vector * vertices = mesh->vertices;
 	vector *vert_normals = mesh->vert_normals;
 	vert_extra * vert_aug = mesh->vert_aug;
 	fc_normal *face_normals = mesh->face_normals;

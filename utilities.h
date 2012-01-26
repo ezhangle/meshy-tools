@@ -1,7 +1,4 @@
 typedef struct { float x, y, z; } vector;
-
-typedef struct { float x, y, z; } vertex;
-
 typedef struct { float r, g, b; } colour;
 
 typedef struct{ vector centre, norm; } fc_normal;
@@ -19,7 +16,7 @@ typedef struct{
 
 struct OFF
 {
-	vertex *vertices;
+	vector *vertices;
 	vector *vert_normals;
 	vert_extra *vert_aug;
 
@@ -55,7 +52,7 @@ void read_vertex_data(FILE * infile, struct OFF *mesh);
 void read_face_data( FILE * infile, struct OFF *mesh);
 
 void write_off_file( FILE * outfile
-	, vertex * vertices
+	, vector * vertices
 	, vector * normals
 	, face * faces
 	, colour * colours

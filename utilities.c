@@ -55,7 +55,7 @@ void allocate_mesh_memory(struct OFF *mesh)
 	mesh->faces = malloc(mesh->numfaces * sizeof(*mesh->faces));
 	if(!mesh->faces)
 	{
-		fprintf(stderr, "Unable to allocate vertex memory\n");
+		fprintf(stderr, "Unable to allocate face memory\n");
 		free_mesh(mesh);
 		exit(EXIT_FAILURE);
 	}
@@ -199,7 +199,7 @@ void read_face_data(FILE * infile, struct OFF *mesh)
 }
 
 void write_off_file( FILE * outfile
-		, vertex * vertices
+		, vector * vertices
 		, vector * normals
 		, face * faces
 		, colour * colours
