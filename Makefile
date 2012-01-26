@@ -31,6 +31,8 @@ add_colour: add_colour.c utilities.o
 utilities.o: utilities.c utilities.h
 	$(CC) $(CFLAGS) -c utilities.c
 
+mesh_comp: utilities.o mesh_comp.c
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
 
 clean:
 	rm -f utilities.o
