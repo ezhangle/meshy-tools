@@ -15,18 +15,11 @@ int main( int argc, char **argv )
 	FILE * outfile;
 	FILE * normfile;
 
-	vertex * vertices = NULL;
-	vector * vert_normals = NULL;
-	vert_extra * vert_aug = NULL;
-	face * faces = NULL;
-	fc_normal * face_normals = NULL;
-	colour * colours = NULL;
+	struct OFF mesh;
 
-	int has_colour = 0;
 	int stitch_normals = 0;
-	int has_normals = 0;
-	unsigned long int numverts=0, numfaces=0, numedges=0;
-	unsigned long i;
+
+	initialise_mesh(&mesh);
 
 	/* tell people about the syntax if they don't get it right */
 	if( argc != 2 && argc != 3){
@@ -38,110 +31,75 @@ int main( int argc, char **argv )
 		return 0;
 	}
 	
-	infile = fopen( argv[1], "r" );
+	open_file(&infile, argv[1], "r");
+	read_OFF_data(infile, &mesh);
+	fclose(infile);
 
-	read_off_header(infile, &has_normals, &has_colour, &numverts, &numfaces, &numedges);
-
-	if( has_normals )
+	if(mesh.has_normals)
 	{
-		fprintf(stderr, "The file header claims that normals are included, exiting.\n");
+		fprintf(stderr, "The file header claims that normals"
+				" are included, exiting.\n");
+		free_mesh(&mesh);
 		fclose(infile);
-		exit(1);	
+		exit(EXIT_FAILURE);
 	}
 
 	/* argv[3] is the name of the file that contains normals */
 	if( argv[3] != NULL )
+	{
 		stitch_normals = 1;
+	}
 	else
 	{
-		vert_aug = malloc( numverts * sizeof(vert_extra) );
-		face_normals = malloc( numfaces * sizeof(fc_normal) );
+		mesh.vert_aug = malloc(mesh.numverts
+					* sizeof(*mesh.vert_aug));
+		mesh.face_normals = malloc(mesh.numfaces
+					* sizeof(*mesh.face_normals));
 	}
 
-	vertices = malloc( numverts * sizeof(vertex) );
-	vert_normals = malloc( numverts * sizeof(vector) );
-	faces = malloc( numfaces * sizeof(face) );
-
-	if( has_colour )
-		colours = malloc( numverts* sizeof(colour) );
-
-	/* if any memory allocation fails, just die */
-	if( vertices == NULL || faces == NULL || (has_colour && colours == NULL) 
-		|| (stitch_normals && face_normals == NULL)
-		|| (stitch_normals && vert_aug == NULL) || vert_normals==NULL )
+	if(!mesh.vert_aug || !mesh.face_normals)
 	{
-		fprintf(stderr, "inital memory allocation failed.\n");
-		free(vertices);
-		free(faces);
-		free(colours);
-		free(face_normals);
-		free(vert_aug);
-		free(vert_normals);
-		exit(1);
+		fprintf(stderr, "Unable to allocate necessary memory\n");
+		free_mesh(&mesh);
+		exit(EXIT_FAILURE);
 	}
 
-	for(i=0; i!=numfaces; ++i)
-	{
-		faces[i].sides = 0;
-		faces[i].verts = NULL;
-	}
-
-	for(i=0; i!=numverts; ++i)
-	{
-		vert_aug[i].assoc_faces = 0;
-		vert_aug[i].faces = 0;
-	}
-
-	read_vertex_data(infile
-		, vertices
-		, vert_normals
-		, colours
-		, numverts
-		, has_normals
-		, has_colour);
-
-	read_face_data(infile, faces, numfaces);
-	fclose(infile);
 
 	fprintf(stderr, "read all data\n");
 	if( stitch_normals == 0 )
 	{
-		calc_face_normals( faces, face_normals, vertices, numfaces);
-		find_face_associations(faces, vert_aug, numfaces);
-		calc_vertex_normals( vertices, vert_normals, vert_aug
-				, face_normals, numverts );
+		calc_face_normals(&mesh);
+		find_face_associations(&mesh);
+		calc_vertex_normals(&mesh);
 
-		free(face_normals);
-		face_normals = NULL;
+		free(mesh.face_normals);
+		mesh.face_normals = NULL;
 	}
 	else
 	{
 		normfile = fopen( argv[3], "r" );
-		read_normal_file(normfile, vert_normals, numverts);
+		read_normal_file(normfile
+			, mesh.vert_normals
+			, mesh.numverts);
 		fclose(normfile);
 	}
 
-	outfile = fopen( argv[2], "w" );
-	write_off_file( outfile
-		, vertices
-		, vert_normals
-		, faces
-		, colours
-		, numverts
-		, numfaces
-		, numedges
+	outfile = fopen(argv[2], "w");
+	write_off_file(outfile
+		, mesh.vertices
+		, mesh.vert_normals
+		, mesh.faces
+		, mesh.colours
+		, mesh.numverts
+		, mesh.numfaces
+		, mesh.numedges
 		, 1
-		, has_colour );
+		, mesh.has_colours);
 	fclose(outfile);
 
 	printf("done.\n");
 
-	free(vertices);
-	free(faces);
-	free(colours);
-	free(face_normals);
-	free(vert_aug);
-	free(vert_normals);
+	free_mesh(&mesh);
 
 	return 0;
 }
@@ -153,7 +111,12 @@ void read_normal_file( FILE * normal_file
 {
 	long int vi=0;
 	for(; vi!=numverts; ++vi)
-		fscanf(normal_file, "%f %f %f", &vert_normals[vi].x, &vert_normals[vi].y, &vert_normals[vi].z );
+	{
+		fscanf(normal_file, "%f %f %f"
+			, &vert_normals[vi].x
+			, &vert_normals[vi].y
+			, &vert_normals[vi].z );
+	}
 
 	return;
 }
@@ -182,15 +145,16 @@ void normalise_vector( vector* A )
 *	the orientation is not considered (are faces' vertex lists consistently 
 *	clockwise?)
 */
-void calc_face_normals( face * faces
-	, fc_normal *face_normals
-	,  vertex * vertices
-	, long int numfaces)
+void calc_face_normals(struct OFF *mesh)
 {
 	vector A, B;
-	long int fi, first, second, third;
+	unsigned long fi, first, second, third;
 
-	for(fi = 0; fi != numfaces; ++fi)
+	face *faces = mesh->faces;
+	fc_normal *face_normals = mesh->face_normals;
+	vertex *vertices = mesh->vertices;
+
+	for(fi = 0; fi !=mesh->numfaces; ++fi)
 	{
 		first = faces[fi].verts[0];
 		second = faces[fi].verts[1];
@@ -237,14 +201,16 @@ void calc_face_barycentre( vertex * vertices
 }
 
 /** find all facesthat each vertex borders */
-void find_face_associations( face * faces
-	, vert_extra * vert_aug
-	, long int numfaces )
+void find_face_associations(struct OFF *mesh)
 {
-	long int vi, fi, size_needed;
+
+	face *faces = mesh->faces;
+	vert_extra *vert_aug = mesh->vert_aug;
+	
+	unsigned long vi, fi, size_needed;
 	int i=0;
 
-	for( fi=0; fi != numfaces; ++fi)
+	for( fi=0; fi !=mesh->numfaces; ++fi)
 	{
 		for(i=0; i != faces[fi].sides; ++i)
 		{
@@ -280,18 +246,19 @@ double vector_dist( vertex A, vector B)
 }
 
 
-void calc_vertex_normals( vertex * vertices
-		, vector *vert_normals
-		, vert_extra * vert_aug
-		, fc_normal *face_normals
-		, long int numverts )
+void calc_vertex_normals(struct OFF *mesh)
 {
 	long int face_ind = 0;
-	long int vi = 0;
+	unsigned long vi = 0;
 	int afi;		/* associated facesindex */
 	double * barycentre_dist = NULL;
 
-	for(; vi != numverts; ++vi)
+	vertex * vertices = mesh->vertices;
+	vector *vert_normals = mesh->vert_normals;
+	vert_extra * vert_aug = mesh->vert_aug;
+	fc_normal *face_normals = mesh->face_normals;
+
+	for(; vi != mesh->numverts; ++vi)
 	{
 		if( vert_aug[vi].faces == NULL || vert_aug[vi].assoc_faces == 0 )
 		{

@@ -2,66 +2,159 @@
 #include <stdlib.h>
 #include "utilities.h"
 
-void read_off_header(FILE *infile
-		, int *has_normals
-		, int *has_colour
-		, unsigned long *numverts
-		, unsigned long *numfaces
-		, unsigned long *numedges)
+void initialise_mesh(struct OFF *mesh)
+{
+	mesh->vertices = NULL;
+	mesh->vert_normals = NULL;
+	mesh->vert_aug = NULL;
+
+	mesh->faces = NULL;
+	mesh->face_normals = NULL;
+	mesh->colours = NULL;
+
+	mesh->has_colours = 0;
+	mesh->has_normals = 0;
+}
+
+void allocate_mesh_memory(struct OFF *mesh)
+{
+	mesh->vertices = malloc(mesh->numverts
+					* sizeof(*mesh->vertices));
+	if(!mesh->vertices)
+	{
+		fprintf(stderr, "Unable to allocate vertex memory\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if(mesh->has_normals)
+	{
+		mesh->vert_normals = malloc(mesh->numverts
+					* sizeof(*mesh->vert_normals));
+		if(!mesh->vert_normals)
+		{
+			fprintf(stderr, "Unable to allocate memory for"
+					" vertex normals.\n");
+			free_mesh(mesh);
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	if(mesh->has_colours)
+	{
+		mesh->colours = malloc(mesh->numverts
+					* sizeof(*mesh->colours));
+		if(!mesh->colours)
+		{
+			fprintf(stderr, "Unable to allocate memory for"
+					" vertex colours.\n");
+			free_mesh(mesh);
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	mesh->faces = malloc(mesh->numfaces * sizeof(*mesh->faces));
+	if(!mesh->faces)
+	{
+		fprintf(stderr, "Unable to allocate vertex memory\n");
+		free_mesh(mesh);
+		exit(EXIT_FAILURE);
+	}
+
+
+}
+
+void free_mesh(struct OFF *mesh)
+{
+	free(mesh->vertices);
+	free(mesh->vert_normals);
+	free(mesh->vert_aug);
+
+	free(mesh->faces);
+	free(mesh->face_normals);
+
+	free(mesh->colours);
+	return;
+}
+
+void read_OFF_data(FILE *infile, struct OFF *mesh)
+{
+	read_off_header(infile, mesh);
+
+	allocate_mesh_memory(mesh);
+
+	read_vertex_data(infile, mesh);
+
+	read_face_data(infile, mesh);
+
+	return;
+}
+
+void open_file(FILE **fp
+		, char *filename
+		, char *mode)
+{
+	*fp = fopen(filename, mode);
+
+	if(fp)
+		return;
+
+	fprintf(stderr, "Unable to open %s, aborting.\n", filename);
+	exit(EXIT_FAILURE);
+}
+
+void read_off_header(FILE *infile, struct OFF *mesh)
 {
 	int ch = fgetc(infile);
 
 	if('C' == ch)
 	{
 		ch = fgetc(infile);
-		*has_colour = 1;
+		mesh->has_colours = 1;
 	}
 
 	if('N' == ch)
 	{
 		ch = fgetc(infile);
-		*has_normals = 1;
+		mesh->has_normals = 1;
 	}
 	
 	fgetc(infile);
 	fgetc(infile);
 
-	fscanf(infile, "%lu %lu %lu", numverts, numfaces, numedges);
+	fscanf(infile, "%lu %lu %lu", &mesh->numverts
+		, &mesh->numfaces
+		, &mesh->numedges);
 
 	return;
 }
 
-void read_vertex_data(FILE * infile
-	, vertex *vertices
-	, vector *normals
-	, colour *colours
-	, unsigned long numverts
-	, int has_normals
-	, int has_colour)
+void read_vertex_data(FILE *infile, struct OFF *mesh)
 {
 	unsigned long vi = 0;
 
-	for(; vi != numverts; ++vi)
+	for(; vi !=mesh->numverts; ++vi)
 	{
-		fscanf(infile, " %f %f %f", &vertices[vi].x
-				, &vertices[vi].y, &vertices[vi].z );
+		fscanf(infile, " %f %f %f", &mesh->vertices[vi].x
+				, &mesh->vertices[vi].y
+				, &mesh->vertices[vi].z );
 
-		if(has_normals && normals != NULL)
+		if(mesh->has_normals && mesh->vert_normals != NULL)
 		{
-			fscanf(infile, " %f %f %f", &normals[vi].x
-				, &normals[vi].y, &normals[vi].z );
+			fscanf(infile, " %f %f %f", &mesh->vert_normals[vi].x
+				, &mesh->vert_normals[vi].y
+				, &mesh->vert_normals[vi].z );
 		}
-		else if (has_normals && normals == NULL)
+		else if(mesh->has_normals && mesh->vert_normals == NULL)
 		{
 			fscanf(infile, " %*f %*f %*f");
 		}
 
-		if( has_colour && colours != NULL)
+		if(mesh->has_colours && mesh->colours != NULL)
 		{
-			fscanf( infile, " %f %f %f 1", &colours[vi].r
-				, &colours[vi].g, &colours[vi].b );
+			fscanf( infile, " %f %f %f 1", &mesh->colours[vi].r
+				, &mesh->colours[vi].g, &mesh->colours[vi].b );
 		}
-		else if (has_colour && colours == NULL)
+		else if(mesh->has_colours && mesh->colours == NULL)
 		{
 			fscanf(infile, " %*f %*f %*f 1");
 		}
@@ -70,29 +163,31 @@ void read_vertex_data(FILE * infile
 	return;
 }
 
-void read_face_data( FILE * infile
-	, face* faces
-	, unsigned long numfaces)
+void read_face_data(FILE * infile, struct OFF *mesh)
 {
 	unsigned long fi = 0;
 	unsigned short side = 0;
+	face *this_face = NULL;
 
-	for(; fi != numfaces; ++fi)
+	for(; fi != mesh->numfaces; ++fi)
 	{
-		fscanf(infile, "%hu ", &(faces[fi].sides));
-		if(faces[fi].sides==0)
+		fscanf(infile, "%hu ", &mesh->faces[fi].sides);
+		this_face = &mesh->faces[fi];
+
+		if(this_face->sides==0)
 		{
 			fprintf(stderr, "face %lu has 0 sides.\n", fi);
-			faces[fi].sides = NULL;
+			this_face->verts = NULL;
 			continue;
 		}
 
-		faces[fi].verts = malloc( faces[fi].sides * sizeof(long) );
+		this_face->verts = malloc( this_face->sides 
+					* sizeof(*(this_face->verts)));
 
-		for(side=0; side != faces[fi].sides; ++side )
+		for(side=0; side != this_face->sides; ++side )
 		{
 			if( EOF == fscanf( infile, " %ld"
-						, &faces[fi].verts[side] ) )
+						, &this_face->verts[side] ) )
 			{
 				fprintf(stderr, "face data error, exiting\n");
 				exit(EXIT_FAILURE);
