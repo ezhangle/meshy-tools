@@ -32,6 +32,13 @@ int main( int argc, char **argv )
 	}
 	
 	open_file(&infile, argv[1], "r");
+	open_file(&outfile, argv[2], "w");
+
+	if(argv[3] != NULL)
+	{
+		open_file(&normfile, argv[3], "r");
+	}
+
 	read_OFF_data(infile, &mesh);
 	fclose(infile);
 
@@ -45,7 +52,7 @@ int main( int argc, char **argv )
 	}
 
 	/* argv[3] is the name of the file that contains normals */
-	if( argv[3] != NULL )
+	if(argv[3] != NULL)
 	{
 		stitch_normals = 1;
 	}
@@ -66,7 +73,7 @@ int main( int argc, char **argv )
 
 
 	fprintf(stderr, "read all data\n");
-	if( stitch_normals == 0 )
+	if(stitch_normals == 0)
 	{
 		calc_face_normals(&mesh);
 		find_face_associations(&mesh);
@@ -77,14 +84,12 @@ int main( int argc, char **argv )
 	}
 	else
 	{
-		normfile = fopen( argv[3], "r" );
 		read_normal_file(normfile
 			, mesh.vert_normals
 			, mesh.numverts);
 		fclose(normfile);
 	}
 
-	outfile = fopen(argv[2], "w");
 	write_off_file(outfile
 		, &mesh
 		, 1

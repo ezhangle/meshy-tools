@@ -20,7 +20,9 @@ int main( int argc, char ** argv )
 		return 0;
 	}
 
-	infile	= fopen( argv[1], "r" );
+	open_file(&infile, argv[1], "r");
+	open_file(&outfile, argv[2], "w");
+	open_file(&colour_dump, argv[3], "w");
 
 	read_OFF_data(infile, &mesh);
 
@@ -33,10 +35,8 @@ int main( int argc, char ** argv )
 		free_mesh(&mesh);
 		exit(0);
 	}
-
 	fclose(infile);
 
-	outfile = fopen( argv[2], "w");
 
 	/* !has_colour because we don't want to print the colour data here */
 	write_off_file(outfile
@@ -45,8 +45,7 @@ int main( int argc, char ** argv )
 		, 0);
 	fclose(outfile);
 
-	colour_dump = fopen( argv[3], "w");
-	if(mesh.has_colours && colour_dump != NULL)
+	if(mesh.has_colours)
 	{
 		write_colour_file(colour_dump, &mesh);
 		fclose(colour_dump);

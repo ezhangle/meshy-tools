@@ -32,18 +32,13 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	
-	infile = fopen( argv[1], "r" );
+	open_file(&infile, argv[1], "r");
+	open_file(&outfile, argv[2], "w");
 
-	if(!infile)
-	{
-		fprintf(stderr, "Error opening %s, aborting.\n", argv[1]);
-		exit(EXIT_FAILURE);
-	}
-
-	if( argc == 3 && argv[3] != NULL )
+	if(argc == 3 && argv[3] != NULL)
 	{
 		stitch_colour = 1;
-		colourfile = fopen( argv[3], "r" );
+		open_file(&colourfile, argv[3], "r");
 	}
 
 	read_OFF_data(infile, &mesh);
@@ -62,7 +57,6 @@ int main(int argc, char **argv)
 		, argv
 		, stitch_colour );
 
-	outfile = fopen( argv[2], "w" );
 	write_off_file(outfile
 		, &mesh
 		, mesh.has_normals

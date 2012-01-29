@@ -21,7 +21,11 @@ int main( int argc, char ** argv )
 		return 0;
 	}
 
-	infile	= fopen( argv[1], "r" );
+	open_file(&infile, argv[1], "r");
+	open_file(&outfile, argv[2], "w");
+
+	if(argv[3] != NULL)
+		open_file(&normal_file, argv[3], "w");
 
 	read_OFF_data(infile, &mesh);
 
@@ -33,18 +37,13 @@ int main( int argc, char ** argv )
 		free_mesh(mesh);
 		exit(0);
 	}
-
 	fclose(infile);
 
-	outfile = fopen( argv[2], "w");
 	write_off_file(outfile
 		, &mesh
 		, 0
 		, mesh.has_colours);
 	fclose(outfile);
-
-	if(argv[3] != NULL)
-		normal_file = fopen(argv[3], "w");
 
 	if(normal_file != NULL)
 	{
