@@ -9,7 +9,7 @@ double distance(vector *A, vector *B);
 void switch_orient(vector normals[]
 	, long vi);
 
-int consistent_orient(vertex vertices[]
+int consistent_orient(vector vertices[]
 	, vector normals[]
 	, long authorities[]
 	, long vert);
@@ -28,7 +28,7 @@ void switch_orient(vector normals[]
 	return;
 }
 
-int consistent_orient(vertex vertices[]
+int consistent_orient(vector vertices[]
 	, vector normals[]
 	, long authorities[]
 	, long vi)
@@ -36,8 +36,8 @@ int consistent_orient(vertex vertices[]
 	/* positions of ends of normals */
 	vector pos_A, pos_B, neg_B;
 
-	vertex *A = &vertices[ authorities[vi] ];
-	vertex *B = &vertices[ vi ];
+	vector *A = &vertices[ authorities[vi] ];
+	vector *B = &vertices[ vi ];
 
 	vector *norm_A = &normals[ authorities[vi] ];
 	vector *norm_B = &normals[ vi ];
@@ -78,17 +78,8 @@ int main(int argc, char *argv[])
 	int has_colour = 0;
 	int has_normals = 0;
 
-	colour *colours = NULL;
-	vertex *vertices = NULL;
-	vector *normals = NULL;
-	face *faces = NULL;
-
 	/* authorities[vertex in question] = authority on its orientation */
 	long *authorities = NULL;
-
-	unsigned long numfaces;
-	unsigned long numverts;
-	unsigned long numedges;
 
 	unsigned long numpairs = 0;
 	unsigned long fi = 0;
@@ -97,95 +88,40 @@ int main(int argc, char *argv[])
 	FILE *infile = NULL;
 	FILE *outfile = NULL;
 
+	struct OFF mesh;
+	initialise_mesh(&mesh);
+
+	face *faces;
+	vector *vertices;
+
 	if(argc != 3)
 	{
 		fprintf(stderr, "syntax is: %s <infile> <outfile>\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
-	infile = fopen(argv[1], "r");
-	if(infile == NULL)
-	{
-		fprintf(stderr, "Unable to open %s.\n", argv[1]);
-		exit(EXIT_FAILURE);
-	}
+	open_file(&infile, argv[1], "r");
+	open_file(&outfile, argv[2], "w");
 
- 	outfile = fopen(argv[2], "w");
-	if(outfile == NULL)
-	{
-		fprintf(stderr, "Unable to open %s.\n", argv[2]);
-		exit(EXIT_FAILURE);
-	}
+	read_OFF_data(infile, &mesh);
 
-	read_off_header(infile
-		, &has_normals
-		, &has_colour
-		, &numverts
-		, &numfaces
-		, &numedges);
-
-	if( !has_normals )
+	if(!mesh.has_normals)
 	{
 		fprintf(infile, "Normals must be present to orient them!\n");
+		free_mesh(&mesh);
 		exit(EXIT_FAILURE);
 	}
 
-	vertices = calloc(numverts, sizeof(*vertices));
-	if(vertices==NULL)
-	{
-		fprintf(stderr, "Unable to allocate memory for vertices.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	authorities = calloc(numverts, sizeof(*authorities));
+	authorities = calloc(mesh.numverts, sizeof(*authorities));
 	if(authorities==NULL)
 	{
 		fprintf(stderr, "Unable to allocate memory for authorities.\n");
 		exit(EXIT_FAILURE);
 	}
-	for(vi=0L; vi!=numverts; ++vi)
+	for(vi=0L; vi!=mesh.numverts; ++vi)
 		authorities[vi] = (long)-1;
 
-	normals = calloc(numverts, sizeof(*normals));
-	if(normals==NULL)
-	{
-		free(vertices);
-		fprintf(stderr, "Unable to allocate memory for vertices.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	faces = calloc(numfaces, sizeof(*faces));
-	if(faces==NULL)
-	{
-		free(normals);
-		free(vertices);
-		fprintf(stderr, "Unable to allocate memory for faces.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	if(has_colour)
-	{
-		colours = calloc(numverts, sizeof(*colours));
-		if(colours==NULL)
-		{
-			free(vertices);
-			free(normals);
-			free_faces(faces, numfaces);
-			fprintf(stderr, "No memory for colours\n");
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	read_vertex_data(infile
-		, vertices
-		, normals
-		, colours
-		, numverts
-		, has_normals
-		, has_colour);
-	read_face_data(infile, faces, numfaces);
-
-	for(; fi<numfaces; ++fi)
+	for(; fi<mesh.numfaces; ++fi)
 	{
 		long int v = -1;
 
@@ -202,28 +138,22 @@ int main(int argc, char *argv[])
 			authorities[v] = fi;
 	}
 
-	for(vi=0L; vi<numverts; ++vi)
+	for(vi=0L; vi<mesh.numverts; ++vi)
 	{
-		if( !consistent_orient(vertices, normals, authorities, vi))
-			switch_orient(normals, vi);
+		if( !consistent_orient(vertices
+				, mesh.vert_normals
+				, authorities, vi))
+		{
+			switch_orient(mesh.vert_normals, vi);
+		}
 	}
 
 	write_off_file(outfile
-		, vertices
-		, normals
-		, faces
-		, colours
-		, numverts
-		, numfaces
-		, numedges
-		, has_normals
-		, has_colour);
+		, &mesh
+		, mesh.has_normals
+		, mesh.has_colours);
 
-	free(vertices);
-	free(normals);
-	free_faces(faces, numfaces);
-	free(authorities);
-	free(colours);
+	free_mesh(&mesh);
 	fclose(infile);
 	fclose(outfile);
 	

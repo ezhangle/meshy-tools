@@ -13,6 +13,7 @@ int main( int argc, char ** argv )
 	FILE * normal_file;
 
 	struct OFF mesh;
+	initialise_mesh(&mesh);
 
 	if( argc != 3 )
 	{

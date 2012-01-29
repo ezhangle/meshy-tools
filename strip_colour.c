@@ -12,6 +12,7 @@ int main( int argc, char ** argv )
 	FILE * colour_dump = NULL;
 
 	struct OFF mesh;
+	initialise_mesh(&mesh);
 
 	if( argc != 3 )
 	{

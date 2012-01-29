@@ -18,6 +18,8 @@ int main(int argc, char **argv)
 
 	struct OFF mesh;
 
+	initialise_mesh(&mesh);
+
 	/* tell people about the syntax if they don't get it right */
 	if( argc < 2 )
 	{
