@@ -3,11 +3,9 @@
 
 #include "utilities.h"
 
-void set_colours( FILE * colourfile
+void set_colours(FILE *colourfile
+	, struct OFF *mesh
 	, char **argv
-	, colour * colours
-	, unsigned long int numverts
-	, int *has_colour
 	, int stitch_colour );
 
 int main(int argc, char **argv)
@@ -16,18 +14,9 @@ int main(int argc, char **argv)
 	FILE * colourfile = NULL;
 	FILE * outfile = NULL;
 
-	vertex * vertices = NULL;
-	vector * normals = NULL;
-	face * faces = NULL;
-	colour * colours = NULL;
-
-	int has_colour = 0;
 	int stitch_colour = 0;
-	int has_normals = 0;
 
-	unsigned long numverts = 0;
-	unsigned long numfaces = 0;
-	unsigned long numedges = 0;
+	struct OFF mesh;
 
 	/* tell people about the syntax if they don't get it right */
 	if( argc < 2 )
@@ -57,95 +46,62 @@ int main(int argc, char **argv)
 		colourfile = fopen( argv[3], "r" );
 	}
 
-	read_off_header(infile
-		, &has_normals
-		, &has_colour
-		, &numverts
-		, &numfaces
-		, &numedges);
+	read_OFF_data(infile, &mesh);
 
-	if( has_colour )
+	if(mesh.has_colours)
 	{
-		fprintf(stderr, "The file header claims that colour data are included, exiting.\n");
+		fprintf(stderr, "The file header claims that colour"
+				" data are included, exiting.\n");
 		fclose(infile);
 		exit(EXIT_FAILURE);	
 	}
-
-	vertices = calloc(numverts, sizeof(vertex));
-	faces = calloc(numfaces, sizeof(face));
-	colours = calloc(numverts, sizeof(colour));
-	if( has_normals )
-		normals = calloc(numverts, sizeof(vector));
-
-	/* if any memory allocation fails, just die */
-	if( vertices == NULL || faces== NULL
-		|| (has_normals && normals == NULL) || colours == NULL )
-	{
-		fprintf(stderr, "Inital memory allocation failed.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	read_vertex_data( infile
-		, vertices
-		, normals
-		, colours
-		, numverts
-		, has_normals
-		, 0);
-
-	read_face_data(	infile
-		, faces
-		, numfaces);
-
 	fclose(infile);
 
 	set_colours(colourfile
+		, &mesh
 		, argv
-		, colours
-		, numverts
-		, &has_colour
 		, stitch_colour );
 
 	outfile = fopen( argv[2], "w" );
 	write_off_file(outfile
-		, vertices
-		, normals
-		, faces
-		, colours
-		, numverts
-		, numfaces
-		, numedges
-		, has_normals
-		, has_colour );
+		, &mesh
+		, mesh.has_normals
+		, 1);
 
 	fclose(outfile);
 	fclose(colourfile);
 
-	free(vertices);
-	free(faces);
-	free(colours);
-	free(normals);
+	free_mesh(&mesh);
 
 	return 0;
 }
 
 void set_colours( FILE * colourfile
+	, struct OFF *mesh
 	, char **argv
-	, colour *colours
-	, unsigned long int numverts
-	, int *has_colour
 	, int stitch_colour )
 {
 	unsigned long int vi = 0;
 	float new_r, new_g, new_b;
 
+	colour *colours = mesh->colours;
+	mesh->colours = calloc(mesh->numverts, sizeof(colour));
+
+	if(!mesh->colours)
+	{
+		fprintf(stderr, "Unable to allocate memory for"
+				" colours, aborting.\n");
+		free_mesh(mesh);
+		exit(EXIT_FAILURE);
+	}
+
 	new_r = (float)atof(argv[3]);
 	new_g = (float)atof(argv[4]);
 	new_b = (float)atof(argv[5]);
 
-	if( stitch_colour )
+	if(stitch_colour)
 	{
-		for(; vi!=numverts; ++vi)
+		for(; vi!=mesh->numverts; ++vi)
 		{
 			fscanf(colourfile, "%f %f %f",
 				&colours[vi].r, &colours[vi].g, &colours[vi].b);
@@ -153,7 +109,7 @@ void set_colours( FILE * colourfile
 	}
 	else
 	{
-		for(; vi!=numverts; ++vi)
+		for(; vi!=mesh->numverts; ++vi)
 		{
 			colours[vi].r = new_r;
 			colours[vi].g = new_g;
@@ -162,7 +118,7 @@ void set_colours( FILE * colourfile
 	}
 
 	/* we've now defined colours, so indicate this */
-	*has_colour = 1;
+	mesh->has_colours = 1;
 
 	return;
 }
