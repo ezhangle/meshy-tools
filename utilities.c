@@ -198,32 +198,31 @@ void read_face_data(FILE * infile, struct OFF *mesh)
 	return;
 }
 
-void write_off_file( FILE * outfile
-		, vector * vertices
-		, vector * normals
-		, face * faces
-		, colour * colours
-		, unsigned long numverts
-		, unsigned long numfaces
-		, unsigned long numedges
-		, int write_normals
-		, int write_colours )
+void write_off_file(FILE *outfile
+	, struct OFF *mesh
+	, int write_normals
+	, int write_colours)
 {
-	unsigned long fi = 0, vi = 0;
 	unsigned short side;
+	unsigned long vi=0UL;
+	unsigned long fi=0UL;
 
-	if(write_colours)
-		fprintf(outfile, "C");
+	vector *vertices = mesh->vertices;
+	vector *normals = mesh->vert_normals;
+	colour *colours = mesh->colours;
+	face *faces = mesh->faces;
 
-	if(write_normals)
-		fprintf(outfile, "N");
-
+	if(write_colours)	fprintf(outfile, "C");
+	if(write_normals)	fprintf(outfile, "N");
 	fprintf(outfile, "OFF\n");
 
-	fprintf(outfile, "%lu %lu %lu\n", numverts, numfaces, numedges);
+	fprintf(outfile, "%lu %lu %lu\n"
+		, mesh->numverts
+		, mesh->numfaces
+		, mesh->numedges);
 
 	/* write the vertex data */
-	for(; vi != numverts; ++vi)
+	for(; vi != mesh->numverts; ++vi)
 	{
 		fprintf( outfile, "%f %f %f"
 			, vertices[vi].x, vertices[vi].y, vertices[vi].z );
@@ -239,7 +238,7 @@ void write_off_file( FILE * outfile
 		fprintf(outfile, "\n");
 	}
 
-	for(; fi != numfaces; ++fi)
+	for(; fi != mesh->numfaces; ++fi)
 	{
 		fprintf(outfile, "%hu", faces[fi].sides);
 		if(faces[fi].sides == 0)

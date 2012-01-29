@@ -1,22 +1,6 @@
-typedef struct { float x, y, z; } vector;
-typedef struct { float r, g, b; } colour;
-
-typedef struct{ vector centre, norm; } fc_normal;
-
-typedef struct{
-	unsigned short sides;
-	long int *verts;
-} face;
-
-/* a vertex augmented with normal information and associated face data */
-typedef struct{
-	int assoc_faces;
-	long int *faces;
-} vert_extra;
-
 struct OFF
 {
-	vector *vertices;
+	vertex *vertices;
 	vector *vert_normals;
 	vert_extra *vert_aug;
 
@@ -50,9 +34,3 @@ void read_off_header(FILE * infile, struct OFF *mesh);
 void read_vertex_data(FILE * infile, struct OFF *mesh);
 
 void read_face_data( FILE * infile, struct OFF *mesh);
-
-void write_off_file( FILE * outfile
-	, struct OFF *mesh
-	, int has_normals
-	, int has_colour );
-

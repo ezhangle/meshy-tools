@@ -86,13 +86,7 @@ int main( int argc, char **argv )
 
 	outfile = fopen(argv[2], "w");
 	write_off_file(outfile
-		, mesh.vertices
-		, mesh.vert_normals
-		, mesh.faces
-		, mesh.colours
-		, mesh.numverts
-		, mesh.numfaces
-		, mesh.numedges
+		, &mesh
 		, 1
 		, mesh.has_colours);
 	fclose(outfile);
