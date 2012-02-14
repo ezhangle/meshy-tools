@@ -11,7 +11,11 @@ all:	strip_colour	\
 	strip_normals	\
 	add_normals	\
 	add_colour	\
+	off_lib		\
 	orient_norms
+
+off_lib: utilities.o
+	ar rcs off_utils.a utilities.o
 
 orient_norms: orient_norms.c utilities.o
 	$(CC) -lm -o orient_norms orient_norms.c utilities.o
@@ -35,6 +39,7 @@ mesh_comp: utilities.o mesh_comp.c
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
 
 clean:
+	rm -f off_utils.a
 	rm -f utilities.o
 	rm -f strip_colour
 	rm -f strip_normals
