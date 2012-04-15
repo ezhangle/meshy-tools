@@ -95,7 +95,7 @@ void open_file(FILE **fp
 {
 	*fp = fopen(filename, mode);
 
-	if(fp)
+	if(*fp)
 		return;
 
 	fprintf(stderr, "Unable to open %s, aborting.\n", filename);
