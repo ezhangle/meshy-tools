@@ -30,9 +30,7 @@ int main(int argc, char **argv)
 	mesh_name = argv[1];
 #endif
 
-	open_file(&mesh_fp, mesh_name, "r");
-
-	create_output_name(mesh_name, mesh_outname);
+	open_file(&mesh_fp, mesh_name, "r+");
 
 	read_OFF_data(mesh_fp, &mesh);
 	
@@ -65,10 +63,6 @@ int main(int argc, char **argv)
 	
 	for(i=0; i!=mesh.numverts; ++i)
 	{
-		mesh.vertices[i].x -= mid_x;
-		mesh.vertices[i].y -= mid_y;
-		mesh.vertices[i].z -= mid_z;
-
 		mesh.vertices[i].x -= mid_x;
 		mesh.vertices[i].y -= mid_y;
 		mesh.vertices[i].z -= mid_z;
