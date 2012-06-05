@@ -3,7 +3,6 @@
 #include <float.h>
 
 #include "utilities.h"
-#include "macros.h"
 
 /** this program centres a mesh (OFF format)
 *	on the origin
@@ -11,10 +10,15 @@
 int main(int argc, char **argv)
 {
 	struct OFF mesh = empty_mesh;
+	int i = 0;
 
 	/* extremal vertex coordinates in the mesh*/
 	double max_x, max_y, max_z;
 	double min_x, min_y, min_z;
+	double mid_x, mid_y, mid_z;
+
+	char *mesh_name = NULL;
+	FILE *mesh_fp = NULL;
 
 #ifdef WINDOWS
 	mesh_name = "../../mesh.off";
@@ -57,9 +61,9 @@ int main(int argc, char **argv)
 		min_z = min(mesh.vertices[i].z, min_z);
 	}
 	
-	double mid_x = (max_x + min_x)/2.0;
-	double mid_y = (max_y + min_y)/2.0;
-	double mid_z = (max_z + min_z)/2.0;
+	mid_x = (max_x + min_x)/2.0;
+	mid_y = (max_y + min_y)/2.0;
+	mid_z = (max_z + min_z)/2.0;
 	
 	for(i=0; i!=mesh.numverts; ++i)
 	{
@@ -68,7 +72,7 @@ int main(int argc, char **argv)
 		mesh.vertices[i].z -= mid_z;
 	}
 	
-	write_off_file(mesh_fp, &mesh);
+	write_off_file(mesh_fp, &mesh, mesh.has_normals, mesh.has_colours);
 	fclose(mesh_fp);
 	
 	return EXIT_SUCCESS;

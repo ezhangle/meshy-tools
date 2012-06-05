@@ -8,6 +8,8 @@ typedef struct{
 	long int *verts;
 } face;
 
+#define empty_mesh { NULL, NULL, NULL,		NULL, NULL, NULL,		0, 0, 0, 0, 0 }
+
 /* a vertex augmented with normal information and associated face data */
 typedef struct{
 	int assoc_faces;
