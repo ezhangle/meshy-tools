@@ -38,12 +38,6 @@ int main(int argc, char *argv[])
 	open_file(&infile, argv[1], "r");
 	open_file(&outfile, argv[2], "w");
 
-	has_normals = detect_normals(infile);
-	if(has_normals)
-		format_string = "%lf %lf %lf";
-	else
-		format_string = "%lf %lf %lf %lf %lf %lf";
-
 	/* remember to swap the normals as well */
 	switch(to_swap)
 	{

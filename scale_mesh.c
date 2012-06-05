@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 	(void)argv;
 
 	printf("enter a scale factor: ");
-	if(1 != scanf("%f", &scale);
+	if(1 != scanf("%f", &scale))
 	{
 		printf("\nno valid value received\n");
 		exit(EXIT_FAILURE);

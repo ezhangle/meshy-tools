@@ -35,7 +35,7 @@ int main( int argc, char ** argv )
 		fprintf(stderr, "Header does not begin with 'N' or 'CN'"
 				" - is this a (C)NOFF file?\n");
 		fclose(infile);
-		free_mesh(mesh);
+		free_mesh(&mesh);
 		exit(0);
 	}
 	fclose(infile);
