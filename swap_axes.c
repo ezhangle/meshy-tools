@@ -5,71 +5,71 @@
 #include "utilities.h"
 
 /*
-*	This program swaps the y and z coordinates .npts and .pts files
+*	This program swaps the coordinates of vertices in OFF files
 */
-
 int main(int argc, char *argv[])
 {
-	FILE *infile;
-	FILE *outfile;
-
-	float x, y, z;
-	float nx, ny, nz;
+	FILE *mesh_fp = NULL;
 
 	enum {	XY_SWAP, XZ_SWAP, YZ_SWAP };
 	int to_swap = XY_SWAP;
-	int has_normals = 0;
-	char *format_string = NULL;
+	double tmp;
 
-	if(argc!=4)
+	struct OFF mesh = empty_mesh;
+	int i = 0;
+
+	if(argc!=3)
 	{
-		printf("Syntax is: %s <infile> <swapped-file>"
+		printf("Syntax is: %s <infile>"
 			" <\"xy\" swap>\n", argv[0]);
 		return 0;
 	}
 
-	if(!strcmp("xy", argv[3]))
+	if(!strcmp("xy", argv[2]))
 		to_swap = XY_SWAP;
-	else if(!strcmp("xz", argv[3]))
+	else if(!strcmp("xz", argv[2]))
 		to_swap = XZ_SWAP;
-	else if(!strcmp("yz", argv[3]))
+	else if(!strcmp("yz", argv[2]))
 		to_swap = YZ_SWAP;
 
-	open_file(&infile, argv[1], "r");
-	open_file(&outfile, argv[2], "w");
+	open_file(&mesh_fp, argv[1], "r+");
 
+	read_OFF_data(mesh_fp, &mesh);
+	
+	rewind(mesh_fp);
+	
 	/* remember to swap the normals as well */
 	switch(to_swap)
 	{
 	case XY_SWAP:
-		while(EOF != fscanf(infile, format_string
-					, &x, &y, &z, &nx, &ny, &nz))
+		for(i=0; i!=mesh.numverts; ++i)
 		{
-			fprintf(outfile, format_string
-					, y, x, z, ny, nx, nz);
+			tmp = mesh.vertices[i].x;
+			mesh.vertices[i].x = mesh.vertices[i].y;
+			mesh.vertices[i].y = tmp;
 		}
 		break;
 	case XZ_SWAP:
-		while(EOF != fscanf(infile, format_string
-					, &x, &y, &z, &nx, &ny, &nz))
+		for(i=0; i!=mesh.numverts; ++i)
 		{
-			fprintf(outfile, format_string
-					, z, y, x, nz, ny, nx);
+			tmp = mesh.vertices[i].x;
+			mesh.vertices[i].x = mesh.vertices[i].z;
+			mesh.vertices[i].z = tmp;
 		}
 		break;
 
 	case YZ_SWAP:
-		while(EOF != fscanf(infile, format_string
-					, &x, &y, &z, &nx, &ny, &nz))
+		for(i=0; i!=mesh.numverts; ++i)
 		{
-			fprintf(outfile, format_string
-					, x, z, y, nx, nz, ny);
+			tmp = mesh.vertices[i].y;
+			mesh.vertices[i].y = mesh.vertices[i].z;
+			mesh.vertices[i].z = tmp;
 		}
 		break;
 	}
 
-	fclose(infile);
-	fclose(outfile);
-
-	return 0;
+	write_off_file(mesh_fp, &mesh, mesh.has_normals, mesh.has_colours);
+	fclose(mesh_fp);
+	
+	return EXIT_SUCCESS;
 }

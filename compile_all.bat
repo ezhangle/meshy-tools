@@ -12,7 +12,7 @@ cl.exe /DWINDOWS strip_normals.c utilities.obj
 
 cl.exe /DWINDOWS normalise_position.c utilities.obj
 cl.exe /DWINDOWS scale_mesh.c utilities.obj
-rem cl.exe /DWINDOWS swap_axes.c utilities.obj
+cl.exe /DWINDOWS swap_axes.c utilities.obj
 cl.exe /DWINDOWS mesh_size.c utilities.obj
 
 pause
