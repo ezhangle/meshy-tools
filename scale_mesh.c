@@ -3,7 +3,6 @@
 #include <float.h>
 
 #include "utilities.h"
-#include "macros.h"
 
 /** this program centres a mesh (OFF format)
 *	on the origin
@@ -12,7 +11,11 @@ int main(int argc, char **argv)
 {
 	struct OFF mesh = empty_mesh;
 
+	int i = 0;
 	double scale = 1.0;
+
+	char *mesh_name = NULL;
+	FILE *mesh_fp = NULL;
 
 #ifdef WINDOWS
 	mesh_name = "../../mesh.off";
@@ -50,7 +53,7 @@ int main(int argc, char **argv)
 		mesh.vertices[i].z *= scale;
 	}
 
-	write_off_file(mesh_fp, &mesh);
+	write_off_file(mesh_fp, &mesh, mesh.has_normals, mesh.has_colours);
 	fclose(mesh_fp);
 	
 	return EXIT_SUCCESS;
