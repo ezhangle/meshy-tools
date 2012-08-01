@@ -20,18 +20,12 @@ int main(int argc, char **argv)
 	char *mesh_name = NULL;
 	FILE *mesh_fp = NULL;
 
-#ifdef WINDOWS
-	mesh_name = argv[1];
-
-	(void)argc;
-#else
 	if(argc != 2)
 	{
 		printf("Syntax is: %s <mesh A>\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 	mesh_name = argv[1];
-#endif
 
 	open_file(&mesh_fp, mesh_name, "r");
 

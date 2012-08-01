@@ -18,20 +18,6 @@ int main(int argc, char **argv)
 	double max_x, max_y, max_z;
 	double min_x, min_y, min_z;
 
-#ifdef WINDOWS
-	mesh_name = argv[1];
-	scale = atof(argv[2]);
-
-	(void)argc;
-
-	printf("enter the desired x extension: ");
-	if(1 != scanf("%f", &scale))
-	{
-		printf("\nno valid value received\n");
-		exit(EXIT_FAILURE);
-	}
-	printf("\n");
-#else
 	if(argc != 3)
 	{
 		printf("Syntax is: %s <mesh> <x extension>\n", argv[0]);
@@ -39,7 +25,6 @@ int main(int argc, char **argv)
 	}
 	mesh_name = argv[1];
 	scale = atof(argv[2]);
-#endif
 
 	open_file(&mesh_fp, mesh_name, "r+");
 
