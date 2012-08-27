@@ -18,7 +18,7 @@ off_lib: utilities.o
 	ar rcs off_utils.a utilities.o
 
 orient_norms: orient_norms.c utilities.o
-	$(CC) -lm -o orient_norms orient_norms.c utilities.o
+	$(CC) -o orient_norms orient_norms.c utilities.o -lm
 
 strip_colour: strip_colour.c utilities.o
 	$(CC) $(CFLAGS) -o strip_colour strip_colour.c utilities.o
@@ -27,7 +27,7 @@ strip_normals: strip_normals.c utilities.o
 	$(CC) $(CFLAGS) -o strip_normals strip_normals.c utilities.o
 
 add_normals: add_normals.c utilities.o
-	$(CC) $(CFLAGS) -lm -o add_normals add_normals.c utilities.o
+	$(CC) $(CFLAGS) -o add_normals add_normals.c utilities.o -lm
 
 add_colour: add_colour.c utilities.o
 	$(CC) $(CFLAGS) -o add_colour add_colour.c utilities.o
