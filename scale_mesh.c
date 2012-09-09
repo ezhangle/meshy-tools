@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
 	struct OFF mesh = empty_mesh;
 
-	int i = 0;
+	unsigned int i = 0U;
 	double scale = 1.0;
 	double factor = 1.0;
 

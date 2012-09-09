@@ -11,6 +11,9 @@ all:	strip_colour	\
 	strip_normals	\
 	add_normals	\
 	add_colour	\
+	scale_mesh	\
+	mesh_size	\
+	swap_axes	\
 	off_lib		\
 	orient_norms
 
@@ -35,7 +38,16 @@ add_colour: add_colour.c utilities.o
 utilities.o: utilities.c utilities.h
 	$(CC) $(CFLAGS) -c utilities.c
 
-mesh_comp: utilities.o mesh_comp.c
+mesh_size:mesh_size.c utilities.o 
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
+
+scale_mesh: scale_mesh.c utilities.o 
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
+
+swap_axes: swap_axes.c utilities.o
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
+
+normalise_position: normalise_position.c utilities.o 
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
 
 clean:

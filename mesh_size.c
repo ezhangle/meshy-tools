@@ -10,12 +10,11 @@
 int main(int argc, char **argv)
 {
 	struct OFF mesh = empty_mesh;
-	int i = 0;
+	unsigned int i = 0U;
 
 	/* extremal vertex coordinates in the mesh*/
 	double max_x, max_y, max_z;
 	double min_x, min_y, min_z;
-	double mid_x, mid_y, mid_z;
 
 	char *mesh_name = NULL;
 	FILE *mesh_fp = NULL;

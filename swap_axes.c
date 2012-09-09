@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	double tmp;
 
 	struct OFF mesh = empty_mesh;
-	int i = 0;
+	unsigned int i = 0U;
 
 	if(argc!=3)
 	{
