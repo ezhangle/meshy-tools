@@ -58,3 +58,14 @@ clean:
 	rm -f add_colour
 	rm -f add_normals
 	rm -f orient_normals
+
+install:
+	cp strip_colour		${HOME}/bin
+	cp strip_normals	${HOME}/bin
+	cp add_normals		${HOME}/bin
+	cp add_colour		${HOME}/bin
+	cp scale_mesh		${HOME}/bin
+	cp mesh_size		${HOME}/bin
+	cp swap_axes		${HOME}/bin
+	cp orient_norms		${HOME}/bin
+

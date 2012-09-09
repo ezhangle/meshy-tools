@@ -1,6 +1,11 @@
 typedef struct { float x, y, z; } vector;
 typedef struct { float r, g, b; } colour;
 
+#ifndef WINDOWS
+	#define min(X,Y)	(((X) < (Y)) ? (X) : (Y))
+	#define max(X,Y)	(((X) > (Y)) ? (X) : (Y))
+#endif
+
 typedef struct{ vector centre, norm; } fc_normal;
 
 typedef struct{
