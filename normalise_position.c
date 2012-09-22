@@ -60,9 +60,9 @@ int main(int argc, char **argv)
 	
 	for(i=0; i!=mesh.numverts; ++i)
 	{
-		mesh.vertices[i].x -= mid_x;
-		mesh.vertices[i].y -= mid_y;
-		mesh.vertices[i].z -= mid_z;
+		mesh.vertices[i].x -= (float)mid_x;
+		mesh.vertices[i].y -= (float)mid_y;
+		mesh.vertices[i].z -= (float)mid_z;
 	}
 	
 	write_off_file(mesh_fp, &mesh, mesh.has_normals, mesh.has_colours);

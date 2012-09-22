@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
 	enum {	XY_SWAP, XZ_SWAP, YZ_SWAP };
 	int to_swap = XY_SWAP;
-	double tmp;
+	float tmp;
 
 	struct OFF mesh = empty_mesh;
 	unsigned int i = 0U;
