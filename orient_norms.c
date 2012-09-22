@@ -88,11 +88,11 @@ int main(int argc, char *argv[])
 	FILE *infile = NULL;
 	FILE *outfile = NULL;
 
-	struct OFF mesh;
-	initialise_mesh(&mesh);
-
 	face *faces;
 	vector *vertices;
+
+	struct OFF mesh;
+	initialise_mesh(&mesh);
 
 	if(argc != 3)
 	{
@@ -111,6 +111,9 @@ int main(int argc, char *argv[])
 		free_mesh(&mesh);
 		exit(EXIT_FAILURE);
 	}
+
+	faces = mesh.faces;
+	vertices = mesh.vertices;
 
 	authorities = calloc(mesh.numverts, sizeof(*authorities));
 	if(authorities==NULL)
