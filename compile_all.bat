@@ -1,6 +1,6 @@
 @echo off
 
-call "%VS100COMNTOOLS%\vsvars32.bat"
+call "%VS110COMNTOOLS%\vsvars32.bat"
 
 cl.exe /DWINDOWS /c utilities.c
 
