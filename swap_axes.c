@@ -32,11 +32,13 @@ int main(int argc, char *argv[])
 	else if(!strcmp("yz", argv[2]))
 		to_swap = YZ_SWAP;
 
-	open_file(&mesh_fp, argv[1], "r+");
+	open_file(&mesh_fp, argv[1], "r");
 
 	read_OFF_data(mesh_fp, &mesh);
-	
-	rewind(mesh_fp);
+
+	/* close then reopen to avoid nasty errors */
+	fclose(mesh_fp);
+	open_file(&mesh_fp, argv[1], "w");
 	
 	/* remember to swap the normals as well */
 	switch(to_swap)

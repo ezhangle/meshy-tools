@@ -10,7 +10,7 @@
 int main(int argc, char **argv)
 {
 	struct OFF mesh = empty_mesh;
-	int i = 0;
+	unsigned i = 0;
 
 	/* extremal vertex coordinates in the mesh*/
 	double max_x, max_y, max_z;
@@ -27,11 +27,13 @@ int main(int argc, char **argv)
 	}
 	mesh_name = argv[1];
 
-	open_file(&mesh_fp, mesh_name, "r+");
+	open_file(&mesh_fp, mesh_name, "r");
 
 	read_OFF_data(mesh_fp, &mesh);
-	
-	rewind(mesh_fp);
+
+	/* close an reopen, otherwise errors occur */
+	fclose(mesh_fp);
+	open_file(&mesh_fp, mesh_name, "w");
 	
 	/* initialise the min/max counters */
 	max_x = mesh.vertices[0].x;

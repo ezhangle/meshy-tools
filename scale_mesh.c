@@ -26,11 +26,13 @@ int main(int argc, char **argv)
 	mesh_name = argv[1];
 	scale = atof(argv[2]);
 
-	open_file(&mesh_fp, mesh_name, "r+");
+	open_file(&mesh_fp, mesh_name, "r");
 
 	read_OFF_data(mesh_fp, &mesh);
 
-	rewind(mesh_fp);
+	/* close and reopen otherwise errors occur */
+	fclose(mesh_fp);
+	open_file(&mesh_fp, mesh_name, "w");
 
 	/* initialise the min/max counters */
 	max_x = mesh.vertices[0].x;

@@ -15,6 +15,7 @@ all:	strip_colour	\
 	mesh_size	\
 	swap_axes	\
 	off_lib		\
+	normalise_position \
 	orient_norms
 
 off_lib: utilities.o
@@ -67,5 +68,5 @@ install:
 	cp scale_mesh		${HOME}/bin
 	cp mesh_size		${HOME}/bin
 	cp swap_axes		${HOME}/bin
-	cp orient_norms		${HOME}/bin
+	cp normalise_position	${HOME}/bin
 
