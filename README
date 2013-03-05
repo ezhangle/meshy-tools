@@ -2,19 +2,18 @@ OFFtools (v0.9) ---------------
 
 These programs are release under a 2-clause BSD licence (see LICENCE),
 but I'd appreciate it if you could drop me an email on
-code@ethernull.org and let me know if you find them useful.
+archibald@ethernull.org and let me know if you find them useful.
 
 To build, just type "make" in this directory. These programs have been
-written and (partially) tested on OpenBSD, the compile with using
-GCC with -Wall -Wextra -pedantic and -std=c89 without any complaints so
-they should be fine on other platforms. 
+written and (lightly) tested on OpenBSD, linux and Windows, the compile
+using GCC with -Wall -Wextra -pedantic and -std=c89 without any
+complaints so they should be fine on other platforms. 
 
 COFF and OFF files are both dealt with transparently, likewise CNOFF and
 NOFF files.
 
 Known issues:
 	- add_normals does not compute normals correctly.
-	- orient_norms is slow for large files.
 
 
 ------strip_normals------
@@ -40,9 +39,3 @@ to an external file.
 Takes r,g and b values and applies this colour to all faces.  If a
 colour file produced by strip_colour is provided, these colours will be
 used.
-
-
-
-------orient_norms------
-Consistently orients the normals in a NOFF file.
-
