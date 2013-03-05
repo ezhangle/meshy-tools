@@ -15,14 +15,10 @@ all:	strip_colour	\
 	mesh_size	\
 	swap_axes	\
 	off_lib		\
-	normalise_position \
-	orient_norms
+	normalise_position
 
 off_lib: utilities.o
 	ar rcs off_utils.a utilities.o
-
-orient_norms: orient_norms.c utilities.o
-	$(CC) -o orient_norms orient_norms.c utilities.o -lm
 
 strip_colour: strip_colour.c utilities.o
 	$(CC) $(CFLAGS) -o strip_colour strip_colour.c utilities.o
@@ -58,7 +54,10 @@ clean:
 	rm -f strip_normals
 	rm -f add_colour
 	rm -f add_normals
-	rm -f orient_normals
+	rm -f scale_mesh
+	rm -f swap_axes
+	rm -f mesh_size
+	rm -f normalise_position
 
 install:
 	cp strip_colour		${HOME}/bin

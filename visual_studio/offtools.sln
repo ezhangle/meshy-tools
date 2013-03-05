@@ -17,8 +17,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "add_normals", "add_normals\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "add_colour", "add_colour\add_colour.vcxproj", "{1441CA18-0E41-4184-A885-5B030A6ADE2F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "orient_norms", "orient_norms\orient_norms.vcxproj", "{DAF8194D-7353-47CA-AD57-49F1D27F3C82}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
