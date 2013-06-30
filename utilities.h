@@ -1,5 +1,5 @@
-typedef struct { float x, y, z; } vector;
-typedef struct { float r, g, b; } colour;
+typedef struct { double x, y, z; } vector;
+typedef struct { double r, g, b; } colour;
 
 #ifndef WINDOWS
 	#define min(X,Y)	(((X) < (Y)) ? (X) : (Y))

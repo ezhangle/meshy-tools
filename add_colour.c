@@ -99,7 +99,7 @@ void set_colours( FILE * colourfile
 	{
 		for(; vi!=mesh->numverts; ++vi)
 		{
-			fscanf(colourfile, "%f %f %f",
+			fscanf(colourfile, "%lf %lf %lf",
 				&colours[vi].r, &colours[vi].g, &colours[vi].b);
 		}
 	}

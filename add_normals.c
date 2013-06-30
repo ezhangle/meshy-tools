@@ -111,7 +111,7 @@ void read_normal_file( FILE * normal_file
 	long int vi=0;
 	for(; vi!=numverts; ++vi)
 	{
-		fscanf(normal_file, "%f %f %f"
+		fscanf(normal_file, "%lf %lf %lf"
 			, &vert_normals[vi].x
 			, &vert_normals[vi].y
 			, &vert_normals[vi].z );

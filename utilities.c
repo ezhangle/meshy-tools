@@ -140,13 +140,13 @@ void read_vertex_data(FILE *infile, struct OFF *mesh)
 
 	for(; vi !=mesh->numverts; ++vi)
 	{
-		fscanf(infile, " %f %f %f", &mesh->vertices[vi].x
+		fscanf(infile, " %lf %lf %lf", &mesh->vertices[vi].x
 				, &mesh->vertices[vi].y
 				, &mesh->vertices[vi].z );
 
 		if(mesh->has_normals && mesh->vert_normals != NULL)
 		{
-			fscanf(infile, " %f %f %f", &mesh->vert_normals[vi].x
+			fscanf(infile, " %lf %lf %lf", &mesh->vert_normals[vi].x
 				, &mesh->vert_normals[vi].y
 				, &mesh->vert_normals[vi].z );
 		}
@@ -157,7 +157,7 @@ void read_vertex_data(FILE *infile, struct OFF *mesh)
 
 		if(mesh->has_colours && mesh->colours != NULL)
 		{
-			fscanf( infile, " %f %f %f 1", &mesh->colours[vi].r
+			fscanf( infile, " %lf %lf %lf 1", &mesh->colours[vi].r
 				, &mesh->colours[vi].g, &mesh->colours[vi].b );
 		}
 		else if(mesh->has_colours && mesh->colours == NULL)
@@ -230,15 +230,15 @@ void write_off_file(FILE *outfile
 	/* write the vertex data */
 	for(; vi != mesh->numverts; ++vi)
 	{
-		fprintf( outfile, "%f %f %f"
+		fprintf( outfile, "%lf %lf %lf"
 			, vertices[vi].x, vertices[vi].y, vertices[vi].z );
 
 		if( write_normals )
-			fprintf(outfile, " %f %f %f",
+			fprintf(outfile, " %lf %lf %lf",
 				normals[vi].x, normals[vi].y, normals[vi].z );
 
 		if( write_colours )
-			fprintf(outfile, " %f %f %f",
+			fprintf(outfile, " %lf %lf %lf",
 				colours[fi].r, colours[fi].g, colours[fi].b );
 
 		fprintf(outfile, "\n");
