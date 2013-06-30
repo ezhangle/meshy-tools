@@ -1,6 +1,6 @@
 CC=gcc
 
-GCCFLAGS=-Wall -pedantic -std=c89 -Wextra -g
+GCCFLAGS=-Wall -pedantic -std=c89 -Wextra -O2
 TCCFLAGS=-Wall -Wunsupported
 CLANGFLAGS=-ansi -pedantic -analyze
 PCCFLAGS=
@@ -15,6 +15,7 @@ all:	strip_colour	\
 	mesh_size	\
 	swap_axes	\
 	off_lib		\
+	rotate_mesh	\
 	normalise_position
 
 off_lib: utilities.o
@@ -44,6 +45,9 @@ scale_mesh: scale_mesh.c utilities.o
 swap_axes: swap_axes.c utilities.o
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
 
+rotate_mesh: rotate_mesh.c utilities.o
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
+
 normalise_position: normalise_position.c utilities.o 
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
 
@@ -58,6 +62,7 @@ clean:
 	rm -f swap_axes
 	rm -f mesh_size
 	rm -f normalise_position
+	rm -f rotate_mesh
 
 install:
 	cp strip_colour		${HOME}/bin
@@ -68,4 +73,5 @@ install:
 	cp mesh_size		${HOME}/bin
 	cp swap_axes		${HOME}/bin
 	cp normalise_position	${HOME}/bin
+	cp rotate_mesh		${HOME}/bin
 
