@@ -16,6 +16,7 @@ all:	strip_colour	\
 	swap_axes	\
 	off_lib		\
 	rotate_mesh	\
+	change_basis	\
 	normalise_position
 
 off_lib: utilities.o
@@ -48,6 +49,9 @@ swap_axes: swap_axes.c utilities.o
 rotate_mesh: rotate_mesh.c utilities.o
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
+change_basis: change_basis.c utilities.o
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
+
 normalise_position: normalise_position.c utilities.o 
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
 
@@ -63,6 +67,7 @@ clean:
 	rm -f mesh_size
 	rm -f normalise_position
 	rm -f rotate_mesh
+	rm -f change_basis
 
 install:
 	cp strip_colour		${HOME}/bin
@@ -74,4 +79,5 @@ install:
 	cp swap_axes		${HOME}/bin
 	cp normalise_position	${HOME}/bin
 	cp rotate_mesh		${HOME}/bin
+	cp change_basis		${HOME}/bin
 
