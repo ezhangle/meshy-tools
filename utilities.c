@@ -14,6 +14,12 @@ void initialise_mesh(struct OFF *mesh)
 
 	mesh->has_colours = 0;
 	mesh->has_normals = 0;
+
+	mesh->numverts = 0UL;
+	mesh->numfaces = 0UL;
+	mesh->numedges = 0UL;
+
+	return;
 }
 
 void allocate_mesh_memory(struct OFF *mesh)
