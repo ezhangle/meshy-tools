@@ -63,3 +63,27 @@ void write_off_file( FILE * outfile
 	, int has_normals
 	, int has_colour );
 
+void rotate_vector(double rot[3][3]
+	, vector *new_vector);
+
+void setup_for_rotation(double rot[3][3]
+	, int Axis
+	, double theta);
+
+
+double angle( vector A
+	, vector B );
+
+vector cross_product(vector A
+	, vector B);
+
+int evec_comp(const void *one
+	, const void *two);
+
+enum
+{
+	X_Axis,
+	Y_Axis,
+	Z_Axis
+};
+

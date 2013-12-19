@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "utilities.h"
 
 void initialise_mesh(struct OFF *mesh)
@@ -196,6 +197,8 @@ void read_face_data(FILE * infile, struct OFF *mesh)
 						, &this_face->verts[side] ) )
 			{
 				fprintf(stderr, "face data error, exiting\n");
+				fprintf(stderr, "fi = %ld, side = %d\n"
+					, fi, side);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -230,15 +233,15 @@ void write_off_file(FILE *outfile
 	/* write the vertex data */
 	for(; vi != mesh->numverts; ++vi)
 	{
-		fprintf( outfile, "%lf %lf %lf"
+		fprintf( outfile, "%f %f %f"
 			, vertices[vi].x, vertices[vi].y, vertices[vi].z );
 
 		if( write_normals )
-			fprintf(outfile, " %lf %lf %lf",
+			fprintf(outfile, " %f %f %f",
 				normals[vi].x, normals[vi].y, normals[vi].z );
 
 		if( write_colours )
-			fprintf(outfile, " %lf %lf %lf",
+			fprintf(outfile, " %f %f %f",
 				colours[fi].r, colours[fi].g, colours[fi].b );
 
 		fprintf(outfile, "\n");
@@ -257,3 +260,73 @@ void write_off_file(FILE *outfile
 
 	return;
 }
+
+void rotate_vector(double rot[3][3], vector *new_vector)
+{
+	vector vect = *new_vector;
+
+	new_vector->x =    (rot[0][0] * vect.x)
+			+ (rot[0][1] * vect.y)
+			+ (rot[0][2] * vect.z);
+	
+	new_vector->y =    (rot[1][0] * vect.x)
+			+ (rot[1][1] * vect.y)
+			+ (rot[1][2] * vect.z);
+
+	new_vector->z =    (rot[2][0] * vect.x)
+			+ (rot[2][1] * vect.y)
+			+ (rot[2][2] * vect.z);
+
+	return;
+}
+
+void setup_for_rotation(double rot[3][3], int Axis, double theta)
+{
+	switch(Axis)
+	{
+		case X_Axis:
+			rot[0][0] = 1.0;
+			rot[0][1] = 0.0;
+			rot[0][2] = 0.0;
+
+			rot[1][0] = 0.0;
+			rot[1][1] = cos(theta);
+			rot[1][2] = sin(theta);
+
+			rot[2][0] = 0.0;
+			rot[2][1] = -sin(theta);
+			rot[2][2] = cos(theta);
+			return;
+
+		case Y_Axis:
+			rot[0][0] = cos(theta);
+			rot[0][1] = 0.0;
+			rot[0][2] = sin(theta);
+
+			rot[1][0] = 0.0;
+			rot[1][1] = 1.0;
+			rot[1][2] = 0.0;
+
+			rot[2][0] = -sin(theta);
+			rot[2][1] = 0.0;
+			rot[2][2] = cos(theta);
+			break;
+
+		case Z_Axis:
+			rot[0][0] = cos(theta);
+			rot[0][1] = sin(theta);
+			rot[0][2] = 0.0;
+
+			rot[1][0] = -sin(theta);
+			rot[1][1] = cos(theta);
+			rot[1][2] = 0.0;
+
+			rot[2][0] = 0.0;
+			rot[2][1] = 0.0;
+			rot[2][2] = 1.0;
+			break;
+	}
+	return;
+}
+
+
