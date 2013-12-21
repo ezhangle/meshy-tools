@@ -23,28 +23,28 @@ off_lib: utilities.o
 	ar rcs off_utils.a utilities.o
 
 strip_colour: strip_colour.c utilities.o
-	$(CC) $(CFLAGS) -o strip_colour strip_colour.c utilities.o
+	$(CC) $(CFLAGS) -o strip_colour strip_colour.c utilities.o -lm
 
 strip_normals: strip_normals.c utilities.o
-	$(CC) $(CFLAGS) -o strip_normals strip_normals.c utilities.o
+	$(CC) $(CFLAGS) -o strip_normals strip_normals.c utilities.o -lm
 
 add_normals: add_normals.c utilities.o
 	$(CC) $(CFLAGS) -o add_normals add_normals.c utilities.o -lm
 
 add_colour: add_colour.c utilities.o
-	$(CC) $(CFLAGS) -o add_colour add_colour.c utilities.o
+	$(CC) $(CFLAGS) -o add_colour add_colour.c utilities.o -lm
 
 utilities.o: utilities.c utilities.h
 	$(CC) $(CFLAGS) -c utilities.c
 
 mesh_size:mesh_size.c utilities.o 
-	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
 scale_mesh: scale_mesh.c utilities.o 
-	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
 swap_axes: swap_axes.c utilities.o
-	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
 rotate_mesh: rotate_mesh.c utilities.o
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
@@ -52,8 +52,8 @@ rotate_mesh: rotate_mesh.c utilities.o
 change_basis: change_basis.c utilities.o
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
-normalise_position: normalise_position.c utilities.o 
-	$(CC) $(CFLAGS) -o $(@) utilities.o $(<)
+normalise_position: normalise_position.c utilities.o
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
 clean:
 	rm -f off_utils.a
