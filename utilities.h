@@ -80,6 +80,10 @@ vector cross_product(vector A
 int evec_comp(const void *one
 	, const void *two);
 
+void normalise_vector(vector *A);
+
+double dot_product(vector *A, vector *B);
+
 enum
 {
 	X_Axis,

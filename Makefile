@@ -1,6 +1,6 @@
 CC=gcc
 
-GCCFLAGS=-Wall -pedantic -std=c89 -Wextra -O2
+GCCFLAGS=-Wall -pedantic -std=c89 -Wextra -O2 -march=native
 TCCFLAGS=-Wall -Wunsupported
 CLANGFLAGS=-ansi -pedantic -analyze
 PCCFLAGS=
@@ -17,22 +17,23 @@ all:	strip_colour	\
 	off_lib		\
 	rotate_mesh	\
 	change_basis	\
-	normalise_position
+	normalise_position \
+	mesh_axis_size
 
 off_lib: utilities.o
 	ar rcs off_utils.a utilities.o
 
 strip_colour: strip_colour.c utilities.o
-	$(CC) $(CFLAGS) -o strip_colour strip_colour.c utilities.o -lm
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
 strip_normals: strip_normals.c utilities.o
-	$(CC) $(CFLAGS) -o strip_normals strip_normals.c utilities.o -lm
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
-add_normals: add_normals.c utilities.o
-	$(CC) $(CFLAGS) -o add_normals add_normals.c utilities.o -lm
+add_normals: add_normals.c add_normals.h utilities.o
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
 add_colour: add_colour.c utilities.o
-	$(CC) $(CFLAGS) -o add_colour add_colour.c utilities.o -lm
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
 utilities.o: utilities.c utilities.h
 	$(CC) $(CFLAGS) -c utilities.c
@@ -47,6 +48,9 @@ swap_axes: swap_axes.c utilities.o
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
 rotate_mesh: rotate_mesh.c utilities.o
+	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
+
+mesh_axis_size: mesh_axis_size.c utilities.o
 	$(CC) $(CFLAGS) -o $(@) utilities.o $(<) -lm
 
 change_basis: change_basis.c utilities.o
@@ -67,6 +71,7 @@ clean:
 	rm -f mesh_size
 	rm -f normalise_position
 	rm -f rotate_mesh
+	rm -f mesh_axis_size
 	rm -f change_basis
 
 install:
@@ -76,6 +81,7 @@ install:
 	cp add_colour		${HOME}/bin
 	cp scale_mesh		${HOME}/bin
 	cp mesh_size		${HOME}/bin
+	cp mesh_axis_size	${HOME}/bin
 	cp swap_axes		${HOME}/bin
 	cp normalise_position	${HOME}/bin
 	cp rotate_mesh		${HOME}/bin

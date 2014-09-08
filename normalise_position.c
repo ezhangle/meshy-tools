@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
 	if(argc != 2)
 	{
-		printf("Syntax is: %s <mesh A>\n", argv[0]);
+		printf("Syntax is: %s <mesh>\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 	mesh_name = argv[1];

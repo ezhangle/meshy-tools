@@ -120,26 +120,6 @@ void read_normal_file( FILE * normal_file
 	return;
 }
 
-void normalise_vector( vector* A )
-{
-	double size = 0;
-	double xx, yy, zz;
-
-	/* square the components */
-	xx = A->x * A->x;
-	yy = A->y * A->y;
-	zz = A->z * A->z;
-
-	/* if the size is too small, assume something went wrong */
-	size = sqrt( xx + yy + zz );
-
-	A->x /= size;
-	A->y /= size;
-	A->z /= size;
-	
-	return;
-}
-
 /**	calculate a face normal by taking the cross product of two of its sides
 *	the orientation is not considered (are faces' vertex lists consistently 
 *	clockwise?)

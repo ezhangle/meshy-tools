@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Desktop
+# Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mesh_size", "mesh_size\mesh_size.vcxproj", "{BDEEFEC5-0DEF-41A8-A751-58AEDCB748D1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scale_mesh", "scale_mesh\scale_mesh.vcxproj", "{223ABEE7-960D-45B3-8616-59D78F4E23A9}"
@@ -16,6 +16,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "add_normals", "add_normals\add_normals.vcxproj", "{8F483B33-E2E7-418A-8609-C6560D94B5D5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "add_colour", "add_colour\add_colour.vcxproj", "{1441CA18-0E41-4184-A885-5B030A6ADE2F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mesh_axis_size", "mesh_axis_size\mesh_axis_size.vcxproj", "{1C3645E2-7A84-4249-B402-BF0650E55BD4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,10 +57,10 @@ Global
 		{1441CA18-0E41-4184-A885-5B030A6ADE2F}.Debug|Win32.Build.0 = Debug|Win32
 		{1441CA18-0E41-4184-A885-5B030A6ADE2F}.Release|Win32.ActiveCfg = Release|Win32
 		{1441CA18-0E41-4184-A885-5B030A6ADE2F}.Release|Win32.Build.0 = Release|Win32
-		{DAF8194D-7353-47CA-AD57-49F1D27F3C82}.Debug|Win32.ActiveCfg = Debug|Win32
-		{DAF8194D-7353-47CA-AD57-49F1D27F3C82}.Debug|Win32.Build.0 = Debug|Win32
-		{DAF8194D-7353-47CA-AD57-49F1D27F3C82}.Release|Win32.ActiveCfg = Release|Win32
-		{DAF8194D-7353-47CA-AD57-49F1D27F3C82}.Release|Win32.Build.0 = Release|Win32
+		{1C3645E2-7A84-4249-B402-BF0650E55BD4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1C3645E2-7A84-4249-B402-BF0650E55BD4}.Debug|Win32.Build.0 = Debug|Win32
+		{1C3645E2-7A84-4249-B402-BF0650E55BD4}.Release|Win32.ActiveCfg = Release|Win32
+		{1C3645E2-7A84-4249-B402-BF0650E55BD4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

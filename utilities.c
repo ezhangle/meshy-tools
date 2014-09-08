@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 #include "utilities.h"
 
 void initialise_mesh(struct OFF *mesh)
@@ -328,5 +329,34 @@ void setup_for_rotation(double rot[3][3], int Axis, double theta)
 	}
 	return;
 }
+
+void normalise_vector(vector *A)
+{
+	double xx = A->x * A->x;
+	double yy = A->y * A->y;
+	double zz = A->z * A->z;
+
+	double size = (double)sqrt(xx + yy + zz);
+
+	if(size > DBL_EPSILON)
+	{
+		A->x /= size;
+		A->y /= size;
+		A->z /= size;
+	}
+	
+	return;
+}
+
+double dot_product(vector *A, vector *B )
+{
+	double xx = A->x * B->x;
+	double yy = A->y * B->y;
+	double zz = A->z * B->z;
+
+	return xx + yy + zz;
+}
+
+
 
 
