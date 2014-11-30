@@ -13,23 +13,23 @@ int main(int argc, char *argv[])
 
 	enum {	XY_SWAP, XZ_SWAP, YZ_SWAP };
 	int to_swap = XY_SWAP;
-	float tmp;
+	double tmp;
 
 	struct OFF mesh = empty_mesh;
 	unsigned int i = 0U;
 
-	if(argc!=3)
+	if (argc != 3)
 	{
 		printf("Syntax is: %s <infile>"
-			" <\"xy\" swap>\n", argv[0]);
+			   " <\"xy\" swap>\n", argv[0]);
 		return 0;
 	}
 
-	if(!strcmp("xy", argv[2]))
+	if (!strcmp("xy", argv[2]))
 		to_swap = XY_SWAP;
-	else if(!strcmp("xz", argv[2]))
+	else if (!strcmp("xz", argv[2]))
 		to_swap = XZ_SWAP;
-	else if(!strcmp("yz", argv[2]))
+	else if (!strcmp("yz", argv[2]))
 		to_swap = YZ_SWAP;
 
 	open_file(&mesh_fp, argv[1], "r");
@@ -39,39 +39,39 @@ int main(int argc, char *argv[])
 	/* close then reopen to avoid nasty errors */
 	fclose(mesh_fp);
 	open_file(&mesh_fp, argv[1], "w");
-	
-	/* remember to swap the normals as well */
-	switch(to_swap)
-	{
-	case XY_SWAP:
-		for(i=0; i!=mesh.numverts; ++i)
-		{
-			tmp = mesh.vertices[i].x;
-			mesh.vertices[i].x = mesh.vertices[i].y;
-			mesh.vertices[i].y = tmp;
-		}
-		break;
-	case XZ_SWAP:
-		for(i=0; i!=mesh.numverts; ++i)
-		{
-			tmp = mesh.vertices[i].x;
-			mesh.vertices[i].x = mesh.vertices[i].z;
-			mesh.vertices[i].z = tmp;
-		}
-		break;
 
-	case YZ_SWAP:
-		for(i=0; i!=mesh.numverts; ++i)
-		{
-			tmp = mesh.vertices[i].y;
-			mesh.vertices[i].y = mesh.vertices[i].z;
-			mesh.vertices[i].z = tmp;
-		}
-		break;
+	/* remember to swap the normals as well */
+	switch (to_swap)
+	{
+		case XY_SWAP:
+			for (i = 0; i != mesh.numverts; ++i)
+			{
+				tmp = mesh.vertices[i].x;
+				mesh.vertices[i].x = mesh.vertices[i].y;
+				mesh.vertices[i].y = tmp;
+			}
+			break;
+		case XZ_SWAP:
+			for (i = 0; i != mesh.numverts; ++i)
+			{
+				tmp = mesh.vertices[i].x;
+				mesh.vertices[i].x = mesh.vertices[i].z;
+				mesh.vertices[i].z = tmp;
+			}
+			break;
+
+		case YZ_SWAP:
+			for (i = 0; i != mesh.numverts; ++i)
+			{
+				tmp = mesh.vertices[i].y;
+				mesh.vertices[i].y = mesh.vertices[i].z;
+				mesh.vertices[i].z = tmp;
+			}
+			break;
 	}
 
 	write_off_file(mesh_fp, &mesh, mesh.has_normals, mesh.has_colours);
 	fclose(mesh_fp);
-	
+
 	return EXIT_SUCCESS;
 }

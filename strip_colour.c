@@ -3,21 +3,21 @@
 #include "utilities.h"
 
 void write_colour_file(FILE *colour_file
-	, struct OFF *mesh);
+					   , struct OFF *mesh);
 
-int main( int argc, char ** argv )
+int main( int argc, char **argv )
 {
-	FILE * infile = NULL;
-	FILE * outfile = NULL;
-	FILE * colour_dump = NULL;
+	FILE *infile = NULL;
+	FILE *outfile = NULL;
+	FILE *colour_dump = NULL;
 
 	struct OFF mesh;
 	initialise_mesh(&mesh);
 
-	if( argc != 3 )
+	if ( argc != 3 )
 	{
 		printf("Syntax is: %s <input-file> <output-file>"
-			" <where-to-dump-colours>\n", argv[0]);
+			   " <where-to-dump-colours>\n", argv[0]);
 		return 0;
 	}
 
@@ -28,7 +28,7 @@ int main( int argc, char ** argv )
 	read_OFF_data(infile, &mesh);
 
 	/* if it claims to have no colour data, exit */
-	if(!mesh.has_colours)
+	if (!mesh.has_colours)
 	{
 		fprintf(stderr, "Header does not begin with 'C'"
 				" - is this a C(N)OFF file?\n");
@@ -41,12 +41,12 @@ int main( int argc, char ** argv )
 
 	/* !has_colour because we don't want to print the colour data here */
 	write_off_file(outfile
-		, &mesh
-		, mesh.has_normals
-		, 0);
+				   , &mesh
+				   , mesh.has_normals
+				   , 0);
 	fclose(outfile);
 
-	if(mesh.has_colours)
+	if (mesh.has_colours)
 	{
 		write_colour_file(colour_dump, &mesh);
 		fclose(colour_dump);
@@ -58,15 +58,15 @@ int main( int argc, char ** argv )
 }
 
 void write_colour_file(FILE *colour_file
-	, struct OFF *mesh)
+					   , struct OFF *mesh)
 {
 	unsigned long vi = 0;
 	colour *colours = mesh->colours;
 
-	for(; vi !=mesh->numverts; ++vi)
+	for (; vi != mesh->numverts; ++vi)
 	{
 		fprintf(colour_file, "%f %f %f\n"
-			, colours[vi].r, colours[vi].g, colours[vi].b);
+				, colours[vi].r, colours[vi].g, colours[vi].b);
 	}
 
 	return;

@@ -11,8 +11,8 @@
 int main(int argc, char **argv)
 {
 	struct OFF mesh = empty_mesh;
-	unsigned int i = 0U, k=0U;
-	int basename_len = 0;
+	unsigned int i = 0U, k = 0U;
+	size_t basename_len = 0;
 
 	/* extremal vertex coordinates in the mesh*/
 	double axis_max[3], axis_min[3];
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	FILE *evec_fp = NULL;
 	FILE *aa_fp = NULL;
 
-	if(argc != 3)
+	if (argc != 3)
 	{
 		printf("Syntax is: %s <mesh> <evec_name>\n", argv[0]);
 		exit(EXIT_FAILURE);
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 	/* read eigenvector file */
 	open_file(&evec_fp, mesh_evec_name, "r");
 
-	for(k=0; k!=3; ++k)
+	for (k = 0; k != 3; ++k)
 	{
 		fscanf(evec_fp, "%*f %lf %lf %lf", &axis[k].x, &axis[k].y, &axis[k].z);
 		normalise_vector(&axis[k]);
@@ -54,9 +54,9 @@ int main(int argc, char **argv)
 	fclose(evec_fp);
 
 	/* compute max/min along each axis */
-	for(i=0; i!=mesh.numverts; ++i)
+	for (i = 0; i != mesh.numverts; ++i)
 	{
-		for(k=0; k!=3; ++k)
+		for (k = 0; k != 3; ++k)
 		{
 			axis_max[k] = max(dot_product(&mesh.vertices[i], &axis[k]), axis_max[k]);
 			axis_min[k] = min(dot_product(&mesh.vertices[i], &axis[k]), axis_min[k]);
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 	}
 
 	open_file(&aa_fp, mesh_name_aa, "w");
-	for(k=0; k!=3; ++k)
+	for (k = 0; k != 3; ++k)
 		fprintf(aa_fp, "0 0 %f %f\n", axis_max[k], axis_min[k]);
 	fclose(aa_fp);
 

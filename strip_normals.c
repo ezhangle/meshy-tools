@@ -2,35 +2,35 @@
 #include <stdlib.h>
 #include "utilities.h"
 
-void write_normal_file(FILE * normal_file
-			, vector *normals	
-			, long int numverts );
+void write_normal_file(FILE *normal_file
+					   , vector *normals
+					   , long int numverts );
 
-int main( int argc, char ** argv )
+int main( int argc, char **argv )
 {
-	FILE * infile;
-	FILE * outfile;
-	FILE * normal_file;
+	FILE *infile;
+	FILE *outfile;
+	FILE *normal_file;
 
 	struct OFF mesh;
 	initialise_mesh(&mesh);
 
-	if( argc != 3 )
+	if ( argc != 3 )
 	{
 		printf("Syntax is: %s <input-file> <output-file> "
-			"<where-to-dump-normals>\n", argv[0]);
+			   "<where-to-dump-normals>\n", argv[0]);
 		return 0;
 	}
 
 	open_file(&infile, argv[1], "r");
 	open_file(&outfile, argv[2], "w");
 
-	if(argv[3] != NULL)
+	if (argv[3] != NULL)
 		open_file(&normal_file, argv[3], "w");
 
 	read_OFF_data(infile, &mesh);
 
-	if(!mesh.has_normals)
+	if (!mesh.has_normals)
 	{
 		fprintf(stderr, "Header does not begin with 'N' or 'CN'"
 				" - is this a (C)NOFF file?\n");
@@ -41,16 +41,16 @@ int main( int argc, char ** argv )
 	fclose(infile);
 
 	write_off_file(outfile
-		, &mesh
-		, 0
-		, mesh.has_colours);
+				   , &mesh
+				   , 0
+				   , mesh.has_colours);
 	fclose(outfile);
 
-	if(normal_file != NULL)
+	if (normal_file != NULL)
 	{
 		write_normal_file(normal_file
-			, mesh.vert_normals
-			, mesh.numverts);
+						  , mesh.vert_normals
+						  , mesh.numverts);
 		fclose(normal_file);
 	}
 
@@ -60,14 +60,14 @@ int main( int argc, char ** argv )
 }
 
 void write_normal_file( FILE *normal_file
-	, vector *normals
-	, long int numverts )
+						, vector *normals
+						, long int numverts )
 {
 	long int vi = 0;
 
-	for(; vi != numverts; ++vi)
+	for (; vi != numverts; ++vi)
 		fprintf(normal_file, "%f %f %f\n"
-			, normals[vi].x, normals[vi].y, normals[vi].z );
+				, normals[vi].x, normals[vi].y, normals[vi].z );
 
 	return;
 }

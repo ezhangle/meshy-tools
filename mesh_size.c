@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 	char *mesh_name = NULL;
 	FILE *mesh_fp = NULL;
 
-	if(argc != 2)
+	if (argc != 2)
 	{
 		printf("Syntax is: %s <mesh>\n", argv[0]);
 		exit(EXIT_FAILURE);
@@ -30,19 +30,19 @@ int main(int argc, char **argv)
 	open_file(&mesh_fp, mesh_name, "r");
 
 	read_OFF_data(mesh_fp, &mesh);
-	
+
 	fclose(mesh_fp);
-	
+
 	/* initialise the min/max counters */
 	max_x = mesh.vertices[0].x;
 	max_y = mesh.vertices[0].y;
 	max_z = mesh.vertices[0].z;
-	
+
 	min_x = mesh.vertices[0].x;
 	min_y = mesh.vertices[0].y;
 	min_z = mesh.vertices[0].z;
 
-	for(i=0; i!=mesh.numverts; ++i)
+	for (i = 0; i != mesh.numverts; ++i)
 	{
 		max_x = max(mesh.vertices[i].x, max_x);
 		max_y = max(mesh.vertices[i].y, max_y);
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 		min_y = min(mesh.vertices[i].y, min_y);
 		min_z = min(mesh.vertices[i].z, min_z);
 	}
-	
+
 	printf("x min = %f\n", min_x);
 	printf("y min = %f\n", min_y);
 	printf("z min = %f\n\n", min_z);
