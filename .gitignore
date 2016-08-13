@@ -1,0 +1,11 @@
+visual_studio/*/Debug
+visual_studio/*/Release
+visual_studio/*/x64/Debug
+visual_studio/*/x64/Release
+visual_studio/Debug
+visual_studio/Release
+visual_studio/*.suo
+visual_studio/*.sdf
+visual_studio/.vs
+visual_studio/*.VC.db
+visual_studio/*/*.user
